@@ -53,6 +53,7 @@ const checklistFormFields = [
 ];
 
 export default function WilcoxAdvisors() {
+  const navigate = useNavigate();
   // State declarations
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showConsultationForm, setShowConsultationForm] = useState(false);
@@ -336,8 +337,7 @@ export default function WilcoxAdvisors() {
       tension: 0.1,
     }],
   };
-export default function WilcoxAdvisors() {
-  const navigate = useNavigate();
+
   // JSX Render
   return (
     <div className="min-h-screen bg-gray-50">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, ChevronRight, ChevronLeft, Check } from 'lucide-react';
 import axios from 'axios';
 import { Line } from 'react-chartjs-2';
@@ -8,6 +8,7 @@ import 'react-quill/dist/quill.snow.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
+// Define services list
 const servicesList = [
   { id: 'bookkeeping', title: 'Bookkeeping', description: 'Full-service bookkeeping including transaction coding and reconciliations' },
   { id: 'monthlyFinancials', title: 'Monthly Financial Package', description: 'Comprehensive monthly financial statements with analysis' },
@@ -17,6 +18,7 @@ const servicesList = [
   { id: 'controllerCFO', title: 'Outsourced Controller/CFO Services', description: 'Strategic financial oversight and planning tailored to your business' },
 ];
 
+// Define multi-step consultation form structure
 const formSteps = [
   {
     title: "Company Information",
@@ -41,6 +43,7 @@ const formSteps = [
   },
 ];
 
+// Define checklist form fields
 const checklistFormFields = [
   { name: "name", label: "Your Name", type: "text", required: true },
   { name: "email", label: "Email Address", type: "email", required: true },
@@ -48,7 +51,8 @@ const checklistFormFields = [
   { name: "revenueRange", label: "Annual Revenue Range", type: "select", options: ["Under $100K", "$100K - $250K", "$250K - $500K", "$500K - $1M", "Over $1M"], required: true },
 ];
 
-export default function EnhancedWebsitePreview() {
+export default function WilcoxAdvisors() {
+  // State declarations
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showConsultationForm, setShowConsultationForm] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -76,35 +80,49 @@ export default function EnhancedWebsitePreview() {
   const [clientChatMessages, setClientChatMessages] = useState([]);
   const [clientChatInput, setClientChatInput] = useState('');
   const [dashboardData, setDashboardData] = useState({
-    financials: { profitLoss: { revenue: 50000, expenses: 30000, netIncome: 20000 }, balanceSheet: { assets: 100000, liabilities: 40000, equity: 60000 } },
+    financials: { 
+      profitLoss: { revenue: 50000, expenses: 30000, netIncome: 20000 }, 
+      balanceSheet: { assets: 100000, liabilities: 40000, equity: 60000 } 
+    },
     cashFlow: { labels: ['Jan', 'Feb', 'Mar'], data: [10000, 15000, 12000] },
     reports: ['Sales by Category', 'Expense Breakdown'],
     gl: [{ date: '2025-02-01', description: 'Sales', amount: 5000 }],
     blogDrafts: [],
-    hero: { headline: "Financial Solutions for Small Businesses", subtext: "Wilcox Advisors helps small businesses like yours grow smarter with tailored financial expertise." },
+    hero: { 
+      headline: "Financial Expertise for Your Business Success", 
+      subtext: "Professional accounting and financial services tailored for small businesses. We handle the numbers so you can focus on growth." 
+    },
     about: "At Wilcox Advisors, we specialize in financial solutions for small businesses. From startups to growing companies, we provide the expertise you need to succeed—built to scale with you every step of the way.",
-    recommendations: [],
-    improvements: [],
-    enhancements: [],
   });
   const [blogPosts, setBlogPosts] = useState([]);
   const [editingBlog, setEditingBlog] = useState(null);
   const [editingContent, setEditingContent] = useState(null);
+  const chatRef = useRef(null);
 
+  // Effect to handle authentication and initial data fetching
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setIsLoggedIn(true);
       fetchBlogPosts();
       fetchDashboardData();
     }
-  }, [isLoggedIn]);
+  }, []);
 
+  // Effect to scroll chat to the bottom when messages update
+  useEffect(() => {
+    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
+  }, [chatMessages, clientChatMessages]);
+
+  // Fetch dashboard data based on user role
   const fetchDashboardData = async () => {
     try {
-      const response = await axios.get(isAdmin ? 'https://wilcox-advisors-backend.onrender.com/api/admin/dashboard' : 'https://wilcox-advisors-backend.onrender.com/api/client/dashboard', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await axios.get(
+        isAdmin 
+          ? `${process.env.REACT_APP_API_URL}/api/admin/dashboard` 
+          : `${process.env.REACT_APP_API_URL}/api/client/dashboard`
+      );
       setDashboardData(prev => ({ ...prev, ...response.data }));
       if (!isAdmin && response.data.clientChat) {
         setClientChatMessages(response.data.clientChat);
@@ -114,32 +132,33 @@ export default function EnhancedWebsitePreview() {
     }
   };
 
+  // Fetch blog posts
   const fetchBlogPosts = async () => {
     try {
-      const response = await axios.get('https://wilcox-advisors-backend.onrender.com/api/blog');
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/blog`);
       setBlogPosts(response.data);
     } catch (error) {
       console.error('Failed to fetch blog posts:', error);
     }
   };
 
+  // Validation functions
   const isStepValid = () => {
     const fields = formSteps[currentStep].fields;
     return fields.every(field => 
-      field.required ? (field.type === 'services' ? formData.services.length > 0 : formData[field.name]?.trim() !== '') : true
+      field.required 
+        ? (field.type === 'services' ? formData.services.length > 0 : formData[field.name]?.trim() !== '') 
+        : true
     );
   };
 
-  const isChecklistValid = () => {
-    return checklistFormFields.every(field => 
-      field.required ? checklistData[field.name]?.trim() !== '' : true
-    );
-  };
+  const isChecklistValid = () => 
+    checklistFormFields.every(field => field.required ? checklistData[field.name]?.trim() !== '' : true);
 
-  const isContactValid = () => {
-    return Object.values(contactData).every(value => value.trim() !== '');
-  };
+  const isContactValid = () => 
+    Object.values(contactData).every(value => value.trim() !== '');
 
+  // Form handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -148,8 +167,8 @@ export default function EnhancedWebsitePreview() {
   const handleServiceToggle = (serviceId) => {
     setFormData(prev => ({
       ...prev,
-      services: prev.services.includes(serviceId)
-        ? prev.services.filter(id => id !== serviceId)
+      services: prev.services.includes(serviceId) 
+        ? prev.services.filter(id => id !== serviceId) 
         : [...prev.services, serviceId],
     }));
   };
@@ -160,15 +179,13 @@ export default function EnhancedWebsitePreview() {
       if (isStepValid()) setCurrentStep(currentStep + 1);
     } else {
       try {
-        await axios.post('https://wilcox-advisors-backend.onrender.com/api/consultation', formData, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        });
+        await axios.post(`${process.env.REACT_APP_API_URL}/api/consultation`, formData);
         alert('Thank you! Your request has been submitted. We’ll contact you shortly!');
         setShowConsultationForm(false);
         setCurrentStep(0);
-        setFormData({
-          companyName: '', industry: '', yearsInBusiness: '', revenueRange: '', services: [],
-          contactName: '', email: '', phone: '', preferredContact: '', preferredTime: '', notes: '',
+        setFormData({ 
+          companyName: '', industry: '', yearsInBusiness: '', revenueRange: '', services: [], 
+          contactName: '', email: '', phone: '', preferredContact: '', preferredTime: '', notes: '' 
         });
       } catch (error) {
         alert('Submission failed. Please try again.');
@@ -183,14 +200,9 @@ export default function EnhancedWebsitePreview() {
 
   const handleChecklistSubmit = async (e) => {
     e.preventDefault();
-    if (!isChecklistValid()) {
-      alert('Please fill out all required fields.');
-      return;
-    }
+    if (!isChecklistValid()) return alert('Please fill out all required fields.');
     try {
-      await axios.post('https://wilcox-advisors-backend.onrender.com/api/checklist', checklistData, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/checklist`, checklistData);
       alert('Thank you! Check your email for the Financial Checklist!');
       setShowChecklistForm(false);
       setChecklistData({ name: '', email: '', companyName: '', revenueRange: '' });
@@ -206,14 +218,9 @@ export default function EnhancedWebsitePreview() {
 
   const handleContactSubmit = async (e) => {
     e.preventDefault();
-    if (!isContactValid()) {
-      alert('Please fill out all required fields.');
-      return;
-    }
+    if (!isContactValid()) return alert('Please fill out all required fields.');
     try {
-      await axios.post('https://wilcox-advisors-backend.onrender.com/api/contact', contactData, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/contact`, contactData);
       alert('Thank you for your message! We will get back to you soon.');
       setContactData({ name: '', email: '', company: '', message: '' });
     } catch (error) {
@@ -221,17 +228,15 @@ export default function EnhancedWebsitePreview() {
     }
   };
 
+  // Chat handlers
   const handleChatSubmit = async (e) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
     const userMessage = { text: chatInput, sender: 'user' };
     setChatMessages(prev => [...prev, userMessage]);
     setChatInput('');
-    
     try {
-      const response = await axios.post('https://wilcox-advisors-backend.onrender.com/api/chat', { message: chatInput }, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/chat`, { message: chatInput });
       setChatMessages(prev => [...prev, { text: response.data.reply, sender: 'ai' }]);
     } catch (error) {
       setChatMessages(prev => [...prev, { text: 'Sorry, something went wrong.', sender: 'ai' }]);
@@ -244,25 +249,21 @@ export default function EnhancedWebsitePreview() {
     const userMessage = { text: clientChatInput, sender: 'user' };
     setClientChatMessages(prev => [...prev, userMessage]);
     setClientChatInput('');
-    
     try {
-      const response = await axios.post('https://wilcox-advisors-backend.onrender.com/api/client/chat', { message: clientChatInput }, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/client/chat`, { message: clientChatInput });
       setClientChatMessages(prev => [...prev, { text: response.data.reply, sender: 'ai' }]);
     } catch (error) {
       setClientChatMessages(prev => [...prev, { text: 'For detailed advice, schedule a consultation!', sender: 'ai' }]);
     }
   };
 
+  // Authentication handlers
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    if (!loginData.email.trim() || !loginData.password.trim()) {
-      alert('Please enter both email and password.');
-      return;
-    }
+    if (!loginData.email.trim() || !loginData.password.trim()) 
+      return alert('Please enter both email and password.');
     try {
-      const response = await axios.post('https://wilcox-advisors-backend.onrender.com/api/login', loginData);
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/login`, loginData);
       localStorage.setItem('token', response.data.token);
       setIsLoggedIn(true);
       setIsAdmin(response.data.isAdmin);
@@ -279,14 +280,13 @@ export default function EnhancedWebsitePreview() {
     setIsAdmin(false);
   };
 
+  // File and content management handlers
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     const uploadFormData = new FormData();
     uploadFormData.append('file', file);
     try {
-      await axios.post('https://wilcox-advisors-backend.onrender.com/api/upload', uploadFormData, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/upload`, uploadFormData);
       alert('File uploaded successfully!');
       fetchDashboardData();
     } catch (error) {
@@ -294,20 +294,14 @@ export default function EnhancedWebsitePreview() {
     }
   };
 
-  const handleBlogEdit = (draft) => {
-    setEditingBlog({ ...draft });
-  };
+  const handleBlogEdit = (draft) => setEditingBlog({ ...draft });
 
   const handleBlogSave = async () => {
     try {
       if (editingBlog._id) {
-        await axios.put(`https://wilcox-advisors-backend.onrender.com/api/blog/${editingBlog._id}`, editingBlog, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        });
+        await axios.put(`${process.env.REACT_APP_API_URL}/api/blog/${editingBlog._id}`, editingBlog);
       } else {
-        await axios.post('https://wilcox-advisors-backend.onrender.com/api/blog', editingBlog, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        });
+        await axios.post(`${process.env.REACT_APP_API_URL}/api/blog`, editingBlog);
       }
       setEditingBlog(null);
       fetchBlogPosts();
@@ -318,15 +312,11 @@ export default function EnhancedWebsitePreview() {
     }
   };
 
-  const handleContentEdit = (section) => {
-    setEditingContent({ section, value: dashboardData[section] });
-  };
+  const handleContentEdit = (section) => setEditingContent({ section, value: dashboardData[section] });
 
   const handleContentSave = async () => {
     try {
-      await axios.post('https://wilcox-advisors-backend.onrender.com/api/admin/content', editingContent, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/admin/content`, editingContent);
       setDashboardData(prev => ({ ...prev, [editingContent.section]: editingContent.value }));
       setEditingContent(null);
       alert('Content saved!');
@@ -335,6 +325,7 @@ export default function EnhancedWebsitePreview() {
     }
   };
 
+  // Chart data for cash flow
   const cashFlowChartData = {
     labels: dashboardData.cashFlow.labels,
     datasets: [{
@@ -345,29 +336,30 @@ export default function EnhancedWebsitePreview() {
     }],
   };
 
+  // JSX Render
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
-      <nav className="bg-white shadow-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="bg-white shadow-lg sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl text-blue-800 font-bold tracking-tight">Wilcox Advisors</span>
+            <div className="flex items-center">
+              <span className="text-2xl text-blue-800 font-bold">WILCOX ADVISORS</span>
             </div>
-            <div className="hidden md:flex items-center space-x-6">
-              <a href="#services" className="text-gray-700 hover:text-blue-800 font-medium transition duration-200">Services</a>
-              <a href="#blog" className="text-gray-700 hover:text-blue-800 font-medium transition duration-200">Blog</a>
-              <a href="#about" className="text-gray-700 hover:text-blue-800 font-medium transition duration-200">About</a>
-              <a href="#contact" className="text-gray-700 hover:text-blue-800 font-medium transition duration-200">Contact</a>
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#services" className="text-gray-700 hover:text-blue-800">Services</a>
+              <a href="#blog" className="text-gray-700 hover:text-blue-800">Blog</a>
+              <a href="#about" className="text-gray-700 hover:text-blue-800">About</a>
+              <a href="#contact" className="text-gray-700 hover:text-blue-800">Contact</a>
               {isLoggedIn ? (
                 <>
-                  <a href="#dashboard" className="text-gray-700 hover:text-blue-800 font-medium transition duration-200">Dashboard</a>
-                  <button onClick={handleLogout} className="text-gray-700 hover:text-blue-800 font-medium">Logout</button>
+                  <a href="#dashboard" className="text-gray-700 hover:text-blue-800">Dashboard</a>
+                  <button onClick={handleLogout} className="text-gray-700 hover:text-blue-800">Logout</button>
                 </>
               ) : (
-                <button onClick={() => setShowLogin(true)} className="text-gray-700 hover:text-blue-800 font-medium">Login</button>
+                <button onClick={() => setShowLogin(true)} className="text-gray-700 hover:text-blue-800">Login</button>
               )}
-              <button onClick={() => setShowConsultationForm(true)} className="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-900 transition duration-200">
+              <button onClick={() => setShowConsultationForm(true)} className="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 transition duration-200">
                 Free Consultation
               </button>
             </div>
@@ -378,23 +370,23 @@ export default function EnhancedWebsitePreview() {
             </div>
           </div>
           {isMobileMenuOpen && (
-            <div className="md:hidden bg-white shadow-lg">
-              <div className="px-2 pt-2 pb-3 space-y-2">
-                <a href="#services" className="block px-3 py-2 text-gray-700 hover:text-blue-800 font-medium" onClick={() => setIsMobileMenuOpen(false)}>Services</a>
-                <a href="#blog" className="block px-3 py-2 text-gray-700 hover:text-blue-800 font-medium" onClick={() => setIsMobileMenuOpen(false)}>Blog</a>
-                <a href="#about" className="block px-3 py-2 text-gray-700 hover:text-blue-800 font-medium" onClick={() => setIsMobileMenuOpen(false)}>About</a>
-                <a href="#contact" className="block px-3 py-2 text-gray-700 hover:text-blue-800 font-medium" onClick={() => setIsMobileMenuOpen(false)}>Contact</a>
+            <div className="md:hidden">
+              <div className="px-2 pt-2 pb-3 space-y-1 bg-white">
+                <a href="#services" className="block px-3 py-2 text-gray-700 hover:text-blue-800" onClick={() => setIsMobileMenuOpen(false)}>Services</a>
+                <a href="#blog" className="block px-3 py-2 text-gray-700 hover:text-blue-800" onClick={() => setIsMobileMenuOpen(false)}>Blog</a>
+                <a href="#about" className="block px-3 py-2 text-gray-700 hover:text-blue-800" onClick={() => setIsMobileMenuOpen(false)}>About</a>
+                <a href="#contact" className="block px-3 py-2 text-gray-700 hover:text-blue-800" onClick={() => setIsMobileMenuOpen(false)}>Contact</a>
                 {isLoggedIn ? (
                   <>
-                    <a href="#dashboard" className="block px-3 py-2 text-gray-700 hover:text-blue-800 font-medium" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</a>
-                    <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800 font-medium">Logout</button>
+                    <a href="#dashboard" className="block px-3 py-2 text-gray-700 hover:text-blue-800" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</a>
+                    <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800">Logout</button>
                   </>
                 ) : (
-                  <button onClick={() => { setShowLogin(true); setIsMobileMenuOpen(false); }} className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800 font-medium">
+                  <button onClick={() => { setShowLogin(true); setIsMobileMenuOpen(false); }} className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800">
                     Login
                   </button>
                 )}
-                <button onClick={() => { setShowConsultationForm(true); setIsMobileMenuOpen(false); }} className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800 font-medium">
+                <button onClick={() => { setShowConsultationForm(true); setIsMobileMenuOpen(false); }} className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800">
                   Free Consultation
                 </button>
               </div>
@@ -404,32 +396,31 @@ export default function EnhancedWebsitePreview() {
       </nav>
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-800 to-blue-900 text-white py-20 sm:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 tracking-tight">{dashboardData.hero.headline}</h1>
-          <p className="text-lg sm:text-xl md:text-2xl mb-8 max-w-3xl mx-auto">{dashboardData.hero.subtext}</p>
-          <div className="space-x-4">
-            <button onClick={() => setShowConsultationForm(true)} className="bg-white text-blue-800 px-6 py-3 rounded-md font-semibold hover:bg-gray-100 transition duration-200">
-              Get Your Free Consultation Today
-            </button>
-            <button className="border-2 border-white text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition duration-200">
-              Learn More
-            </button>
+      <div className="bg-gradient-to-r from-blue-800 to-blue-900 text-white py-20">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="md:w-2/3">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">{dashboardData.hero.headline}</h1>
+            <p className="text-xl mb-8">{dashboardData.hero.subtext}</p>
+            <div className="space-x-4">
+              <button onClick={() => setShowConsultationForm(true)} className="bg-white text-blue-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-200">
+                Schedule Free Consultation
+              </button>
+              <button className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition duration-200">
+                Learn More
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Lead Magnet Section */}
-      <section className="py-12 bg-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Free Financial Checklist</h2>
-          <p className="text-lg sm:text-xl text-gray-700 mb-6 max-w-2xl mx-auto">
-            Download our checklist to streamline your small business finances—simple steps to save time and money! Just fill out the form below.
+      <section className="py-16 bg-gray-100">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-blue-800 mb-4">Free Financial Checklist</h2>
+          <p className="text-lg text-gray-700 mb-6 max-w-2xl mx-auto">
+            Download our checklist to streamline your small business finances—simple steps to save time and money!
           </p>
-          <button 
-            onClick={() => setShowChecklistForm(true)}
-            className="bg-blue-800 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-900 transition duration-200"
-          >
+          <button onClick={() => setShowChecklistForm(true)} className="bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-900 transition duration-200">
             Get It Now
           </button>
         </div>
@@ -437,8 +428,8 @@ export default function EnhancedWebsitePreview() {
 
       {/* Services Section */}
       <section id="services" className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-blue-800 mb-10 text-center">Our Small Business Services</h2>
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-blue-800 mb-10 text-center">Our Small Business Services</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {servicesList.map((service) => (
               <div key={service.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-200">
@@ -452,8 +443,8 @@ export default function EnhancedWebsitePreview() {
 
       {/* Blog Section */}
       <section id="blog" className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-blue-800 mb-10 text-center">Blog & Updates</h2>
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-blue-800 mb-10 text-center">Blog & Updates</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {blogPosts.map((post) => (
               <div key={post._id} className="bg-gray-50 p-6 rounded-lg shadow-sm">
@@ -471,8 +462,8 @@ export default function EnhancedWebsitePreview() {
       {/* Admin Dashboard Section */}
       {isLoggedIn && isAdmin && (
         <section id="dashboard" className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl sm:text-4xl font-bold text-blue-800 mb-10 text-center">Admin Dashboard</h2>
+          <div className="max-w-6xl mx-auto px-4">
+            <h2 className="text-3xl font-bold text-blue-800 mb-10 text-center">Admin Dashboard</h2>
             <div className="bg-white p-6 rounded-lg shadow-md space-y-8">
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Blog Drafts</h3>
@@ -485,25 +476,22 @@ export default function EnhancedWebsitePreview() {
                       className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-2"
                       placeholder="Blog Title"
                     />
-                    <ReactQuill
-                      value={editingBlog.content}
-                      onChange={(content) => setEditingBlog({ ...editingBlog, content })}
-                      className="mb-4"
-                    />
+                    <ReactQuill value={editingBlog.content} onChange={(content) => setEditingBlog({ ...editingBlog, content })} className="mb-4" />
                     <div className="flex space-x-4">
-                      <button onClick={handleBlogSave} className="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-900">Save</button>
+                      <button onClick={handleBlogSave} className="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 transition duration-200">Save</button>
                       <button onClick={() => setEditingBlog(null)} className="text-gray-700 hover:text-blue-800">Cancel</button>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {dashboardData.blogDrafts.map((draft, index) => (
-                      <div key={index} className="border p-4 rounded-md">
-                        <h4 className="font-semibold">{draft.title}</h4>
+                      <div key={index} className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                        <h4 className="font-semibold text-gray-900">{draft.title}</h4>
                         <div dangerouslySetInnerHTML={{ __html: draft.content.substring(0, 100) + '...' }} />
                         <button onClick={() => handleBlogEdit(draft)} className="text-blue-800 hover:underline mt-2">Edit</button>
                       </div>
                     ))}
+                    <button onClick={() => setEditingBlog({ title: '', content: '' })} className="text-blue-800 hover:underline mt-4">Add New Draft</button>
                   </div>
                 )}
               </div>
@@ -519,14 +507,12 @@ export default function EnhancedWebsitePreview() {
                           value={editingContent.value.headline}
                           onChange={(e) => setEditingContent({ ...editingContent, value: { ...editingContent.value, headline: e.target.value } })}
                           className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-2"
-                          placeholder="Headline"
                         />
                         <textarea
                           value={editingContent.value.subtext}
                           onChange={(e) => setEditingContent({ ...editingContent, value: { ...editingContent.value, subtext: e.target.value } })}
                           rows={3}
                           className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-2"
-                          placeholder="Subtext"
                         />
                       </>
                     ) : (
@@ -535,25 +521,24 @@ export default function EnhancedWebsitePreview() {
                         onChange={(e) => setEditingContent({ ...editingContent, value: e.target.value })}
                         rows={3}
                         className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-2"
-                        placeholder="About Text"
                       />
                     )}
                     <div className="flex space-x-4">
-                      <button onClick={handleContentSave} className="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-900">Save</button>
+                      <button onClick={handleContentSave} className="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 transition duration-200">Save</button>
                       <button onClick={() => setEditingContent(null)} className="text-gray-700 hover:text-blue-800">Cancel</button>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     <div>
-                      <h4 className="font-semibold">Hero Section</h4>
-                      <p>{dashboardData.hero.headline}</p>
-                      <p>{dashboardData.hero.subtext}</p>
+                      <h4 className="font-semibold text-gray-900">Hero Section</h4>
+                      <p className="text-gray-700">{dashboardData.hero.headline}</p>
+                      <p className="text-gray-700">{dashboardData.hero.subtext}</p>
                       <button onClick={() => handleContentEdit('hero')} className="text-blue-800 hover:underline mt-2">Edit</button>
                     </div>
                     <div>
-                      <h4 className="font-semibold">About Section</h4>
-                      <p>{dashboardData.about}</p>
+                      <h4 className="font-semibold text-gray-900">About Section</h4>
+                      <p className="text-gray-700">{dashboardData.about}</p>
                       <button onClick={() => handleContentEdit('about')} className="text-blue-800 hover:underline mt-2">Edit</button>
                     </div>
                   </div>
@@ -567,8 +552,8 @@ export default function EnhancedWebsitePreview() {
       {/* Client Dashboard Section */}
       {isLoggedIn && !isAdmin && (
         <section id="dashboard" className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl sm:text-4xl font-bold text-blue-800 mb-10 text-center">Your Financial Dashboard</h2>
+          <div className="max-w-6xl mx-auto px-4">
+            <h2 className="text-3xl font-bold text-blue-800 mb-10 text-center">Your Financial Dashboard</h2>
             <div className="bg-white p-6 rounded-lg shadow-md space-y-8">
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Financial Overview</h3>
@@ -620,22 +605,26 @@ export default function EnhancedWebsitePreview() {
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Upload Your Data</h3>
-                <input type="file" onChange={handleFileUpload} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                <input 
+                  type="file" 
+                  onChange={handleFileUpload} 
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
+                />
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Download Deliverables</h3>
-                <button className="bg-blue-800 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-900 transition duration-200">
+                <button className="bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-900 transition duration-200">
                   Download Latest Report
                 </button>
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Chat with Us</h3>
-                <button onClick={() => setClientChatOpen(!clientChatOpen)} className="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-900">
+                <button onClick={() => setClientChatOpen(!clientChatOpen)} className="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 transition duration-200">
                   {clientChatOpen ? 'Close Chat' : 'Open Chat'}
                 </button>
                 {clientChatOpen && (
-                  <div className="mt-4 border rounded-lg p-4">
-                    <div className="h-64 overflow-y-auto space-y-3 mb-4">
+                  <div className="mt-4 bg-gray-50 p-4 rounded-lg shadow-sm">
+                    <div ref={chatRef} className="h-64 overflow-y-auto space-y-3 mb-4">
                       {clientChatMessages.map((msg, index) => (
                         <div key={index} className={`p-2 rounded-lg max-w-[80%] ${msg.sender === 'user' ? 'bg-blue-100 ml-auto' : 'bg-gray-100'}`}>
                           {msg.text}
@@ -650,7 +639,7 @@ export default function EnhancedWebsitePreview() {
                         className="flex-1 border rounded-l-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Ask a question..."
                       />
-                      <button type="submit" className="bg-blue-800 text-white px-4 py-2 rounded-r-md hover:bg-blue-900">
+                      <button type="submit" className="bg-blue-800 text-white px-4 py-2 rounded-r-md hover:bg-blue-900 transition duration-200">
                         Send
                       </button>
                     </form>
@@ -664,8 +653,8 @@ export default function EnhancedWebsitePreview() {
 
       {/* Testimonials Section */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-blue-800 mb-10 text-center">What Small Businesses Say</h2>
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-blue-800 mb-10 text-center">What Small Businesses Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
               <p className="text-gray-700 italic">"Wilcox Advisors made our finances manageable—perfect for my small shop!"</p>
@@ -681,25 +670,23 @@ export default function EnhancedWebsitePreview() {
 
       {/* About Section */}
       <section id="about" className="py-16 bg-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-blue-800 mb-8">About Wilcox Advisors</h2>
-          <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">{dashboardData.about}</p>
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-blue-800 mb-8">About Wilcox Advisors</h2>
+          <p className="text-lg text-gray-700 max-w-3xl mx-auto">{dashboardData.about}</p>
         </div>
       </section>
 
       {/* Contact Us Section */}
       <section id="contact" className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-bold text-blue-800 mb-10 text-center">Contact Us</h2>
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-blue-800 mb-10 text-center">Contact Us</h2>
           <div className="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
             <p className="text-gray-700 mb-6 text-center">
               Have questions about our services? Send us a message and we'll get back to you as soon as possible.
             </p>
             <form onSubmit={handleContactSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Your Name <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Your Name <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   name="name"
@@ -710,9 +697,7 @@ export default function EnhancedWebsitePreview() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Email Address <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Email Address <span className="text-red-500">*</span></label>
                 <input
                   type="email"
                   name="email"
@@ -723,9 +708,7 @@ export default function EnhancedWebsitePreview() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Company <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Company <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   name="company"
@@ -736,9 +719,7 @@ export default function EnhancedWebsitePreview() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Message <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Message <span className="text-red-500">*</span></label>
                 <textarea
                   name="message"
                   value={contactData.message}
@@ -764,20 +745,19 @@ export default function EnhancedWebsitePreview() {
       {showConsultationForm && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl max-h-[90vh] overflow-y-auto w-full max-w-md sm:max-w-lg md:max-w-3xl">
-            <div className="sticky top-0 bg-white p-4 sm:p-6 border-b flex justify-between items-center">
-              <h2 className="text-xl sm:text-2xl font-bold text-blue-800">Schedule Your Free Consultation</h2>
+            <div className="sticky top-0 bg-white p-6 border-b flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-blue-800">Schedule Your Free Consultation</h2>
               <button onClick={() => { setShowConsultationForm(false); setCurrentStep(0); }} className="text-gray-500 hover:text-gray-700">
                 <X size={24} />
               </button>
             </div>
-            <div className="p-4 sm:p-6">
+            <div className="p-6">
               <div className="flex justify-between mb-8">
                 {formSteps.map((step, index) => (
                   <div key={index} className="flex items-center">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                       index === currentStep ? 'bg-blue-800 text-white' :
-                      index < currentStep ? 'bg-green-500 text-white' :
-                      'bg-gray-200 text-gray-600'
+                      index < currentStep ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'
                     }`}>
                       {index < currentStep ? '✓' : index + 1}
                     </div>
@@ -793,7 +773,7 @@ export default function EnhancedWebsitePreview() {
                     {servicesList.map((service) => (
                       <div
                         key={service.id}
-                        className="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition duration-150"
+                        className="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition duration-200"
                         onClick={() => handleServiceToggle(service.id)}
                       >
                         <div className="flex items-center h-5">
@@ -805,7 +785,7 @@ export default function EnhancedWebsitePreview() {
                         </div>
                         <div className="ml-3 flex-1">
                           <label className="text-sm font-medium text-gray-900 cursor-pointer">{service.title}</label>
-                          <p className="text-sm text-gray-500">{service.description}</p>
+                          <p className="text-sm text-gray-600">{service.description}</p>
                         </div>
                       </div>
                     ))}
@@ -822,7 +802,7 @@ export default function EnhancedWebsitePreview() {
                             name={field.name}
                             value={formData[field.name]}
                             onChange={handleInputChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                             required={field.required}
                           >
                             <option value="">Select an option</option>
@@ -836,7 +816,7 @@ export default function EnhancedWebsitePreview() {
                             value={formData[field.name]}
                             onChange={handleInputChange}
                             rows={4}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                             required={field.required}
                           />
                         ) : (
@@ -845,7 +825,7 @@ export default function EnhancedWebsitePreview() {
                             name={field.name}
                             value={formData[field.name]}
                             onChange={handleInputChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                             required={field.required}
                           />
                         )}
@@ -855,7 +835,7 @@ export default function EnhancedWebsitePreview() {
                 )}
                 <div className="mt-8 flex justify-between">
                   {currentStep > 0 && (
-                    <button type="button" onClick={() => setCurrentStep(currentStep - 1)} className="flex items-center px-4 py-2 text-blue-800 hover:text-blue-900 font-medium transition duration-150">
+                    <button type="button" onClick={() => setCurrentStep(currentStep - 1)} className="flex items-center px-4 py-2 text-blue-800 hover:text-blue-900 transition duration-200">
                       <ChevronLeft className="w-5 h-5 mr-1" /> Previous
                     </button>
                   )}
@@ -863,7 +843,7 @@ export default function EnhancedWebsitePreview() {
                     type={currentStep === formSteps.length - 1 ? 'submit' : 'button'}
                     onClick={currentStep < formSteps.length - 1 ? () => setCurrentStep(currentStep + 1) : undefined}
                     disabled={!isStepValid()}
-                    className={`ml-auto px-6 py-2 rounded-md flex items-center text-sm sm:text-base font-medium transition duration-150 ${
+                    className={`ml-auto px-6 py-2 rounded-lg font-semibold transition duration-200 ${
                       isStepValid() ? 'bg-blue-800 text-white hover:bg-blue-900' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                   >
@@ -881,8 +861,8 @@ export default function EnhancedWebsitePreview() {
       {showChecklistForm && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md sm:max-w-lg">
-            <h2 className="text-xl sm:text-2xl font-bold text-blue-800 mb-4">Get Your Free Financial Checklist</h2>
-            <p className="text-gray-700 mb-6">Please provide your details to download the checklist and join our mailing list!</p>
+            <h2 className="text-2xl font-bold text-blue-800 mb-4">Get Your Free Financial Checklist</h2>
+            <p className="text-gray-700 mb-6">Please provide your details to download the checklist!</p>
             <form onSubmit={handleChecklistSubmit} className="space-y-6">
               {checklistFormFields.map((field) => (
                 <div key={field.name} className="space-y-2">
@@ -894,7 +874,7 @@ export default function EnhancedWebsitePreview() {
                       name={field.name}
                       value={checklistData[field.name]}
                       onChange={handleChecklistInputChange}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       required={field.required}
                     >
                       <option value="">Select an option</option>
@@ -908,23 +888,17 @@ export default function EnhancedWebsitePreview() {
                       name={field.name}
                       value={checklistData[field.name]}
                       onChange={handleChecklistInputChange}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       required={field.required}
                     />
                   )}
                 </div>
               ))}
               <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setShowChecklistForm(false)}
-                  className="text-gray-700 hover:text-blue-800 font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-800 text-white px-6 py-2 rounded-md font-semibold hover:bg-blue-900 transition duration-200"
+                <button type="button" onClick={() => setShowChecklistForm(false)} className="text-gray-700 hover:text-blue-800">Cancel</button>
+                <button 
+                  type="submit" 
+                  className="bg-blue-800 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-900 transition duration-200" 
                   disabled={!isChecklistValid()}
                 >
                   Submit & Download
@@ -939,13 +913,11 @@ export default function EnhancedWebsitePreview() {
       {showLogin && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-            <h2 className="text-2xl font-bold text-blue-800 mb-4">Login</h2>
+            <h2 className="text-2xl font-bold text-blue-800 mb-4">Client Login</h2>
             <form onSubmit={handleLoginSubmit}>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Email <span className="text-red-500">*</span>
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700">Email</label>
                   <input
                     type="email"
                     value={loginData.email}
@@ -955,9 +927,7 @@ export default function EnhancedWebsitePreview() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Password <span className="text-red-500">*</span>
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700">Password</label>
                   <input
                     type="password"
                     value={loginData.password}
@@ -968,22 +938,21 @@ export default function EnhancedWebsitePreview() {
                 </div>
               </div>
               <div className="mt-6 flex justify-end space-x-4">
-                <button type="submit" className="bg-blue-800 text-white px-6 py-2 rounded-md hover:bg-blue-900 transition duration-200">
+                <button type="submit" className="bg-blue-800 text-white px-6 py-2 rounded-lg hover:bg-blue-900 transition duration-200">
                   Login
                 </button>
-                <button type="button" onClick={() => setShowLogin(false)} className="text-gray-700 hover:text-blue-800">Cancel</button>
+                <button type="button" onClick={() => setShowLogin(false)} className="text-gray-700 hover:text-blue-800">
+                  Cancel
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* AI Chat Widget (Public) */}
+      {/* AI Chat Widget */}
       <div className="fixed bottom-4 right-4 z-40">
-        <button
-          onClick={() => setIsChatOpen(!isChatOpen)}
-          className="bg-blue-800 text-white p-3 rounded-full shadow-lg hover:bg-blue-900 transition duration-200"
-        >
+        <button onClick={() => setIsChatOpen(!isChatOpen)} className="bg-blue-800 text-white p-3 rounded-full shadow-lg hover:bg-blue-900 transition duration-200">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h8m-4-4v8m9 4a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -996,7 +965,7 @@ export default function EnhancedWebsitePreview() {
                 <X size={20} />
               </button>
             </div>
-            <div className="h-64 overflow-y-auto p-4 space-y-3">
+            <div ref={chatRef} className="h-64 overflow-y-auto p-4 space-y-3">
               {chatMessages.map((msg, index) => (
                 <div key={index} className={`p-2 rounded-lg max-w-[80%] ${msg.sender === 'user' ? 'bg-blue-100 ml-auto' : 'bg-gray-100'}`}>
                   {msg.text}
@@ -1011,10 +980,7 @@ export default function EnhancedWebsitePreview() {
                 className="flex-1 border rounded-l-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Ask us anything..."
               />
-              <button 
-                type="submit"
-                className="bg-blue-800 text-white px-4 py-2 rounded-r-md hover:bg-blue-900"
-              >
+              <button type="submit" className="bg-blue-800 text-white px-4 py-2 rounded-r-md hover:bg-blue-900 transition duration-200">
                 Send
               </button>
             </form>
@@ -1024,7 +990,7 @@ export default function EnhancedWebsitePreview() {
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-6xl mx-auto px-4 text-center">
           <p className="text-sm sm:text-base">© 2025 Wilcox Advisors. All rights reserved.</p>
           <a href="#contact" className="text-blue-300 hover:text-blue-100 text-sm sm:text-base font-medium">Contact Us</a>
         </div>

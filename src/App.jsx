@@ -406,8 +406,11 @@ export default function WilcoxAdvisors() {
             <div className="space-x-4">
               <button onClick={() => setShowConsultationForm(true)} className="bg-white text-blue-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-200">
                 Schedule Free Consultation
-              </button>
-              <button className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition duration-200">
+               </button>
+              <button 
+                onClick={() => navigate('/learn-more')} // Ensure this is correct
+                className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition duration-200"
+              >
                 Learn More
               </button>
             </div>

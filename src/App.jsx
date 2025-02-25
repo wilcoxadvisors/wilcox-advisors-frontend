@@ -5,6 +5,7 @@ import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { useNavigate } from 'react-router-dom';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -335,7 +336,8 @@ export default function WilcoxAdvisors() {
       tension: 0.1,
     }],
   };
-
+export default function WilcoxAdvisors() {
+  const navigate = useNavigate();
   // JSX Render
   return (
     <div className="min-h-screen bg-gray-50">

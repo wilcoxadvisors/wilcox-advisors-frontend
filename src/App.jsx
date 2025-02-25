@@ -102,7 +102,7 @@ export default function EnhancedWebsitePreview() {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await axios.get(isAdmin ? 'http://localhost:5000/api/admin/dashboard' : 'http://localhost:5000/api/client/dashboard', {
+      const response = await axios.get(isAdmin ? 'https://wilcox-advisors-backend.onrender.com/api/admin/dashboard' : 'https://wilcox-advisors-backend.onrender.com/api/client/dashboard', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       setDashboardData(prev => ({ ...prev, ...response.data }));
@@ -116,7 +116,7 @@ export default function EnhancedWebsitePreview() {
 
   const fetchBlogPosts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/blog');
+      const response = await axios.get('https://wilcox-advisors-backend.onrender.com/api/blog');
       setBlogPosts(response.data);
     } catch (error) {
       console.error('Failed to fetch blog posts:', error);
@@ -160,7 +160,7 @@ export default function EnhancedWebsitePreview() {
       if (isStepValid()) setCurrentStep(currentStep + 1);
     } else {
       try {
-        await axios.post('http://localhost:5000/api/consultation', formData, {
+        await axios.post('https://wilcox-advisors-backend.onrender.com/api/consultation', formData, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
         alert('Thank you! Your request has been submitted. We’ll contact you shortly!');
@@ -188,7 +188,7 @@ export default function EnhancedWebsitePreview() {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/api/checklist', checklistData, {
+      await axios.post('https://wilcox-advisors-backend.onrender.com/api/checklist', checklistData, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       alert('Thank you! Check your email for the Financial Checklist!');
@@ -211,7 +211,7 @@ export default function EnhancedWebsitePreview() {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/api/contact', contactData, {
+      await axios.post('https://wilcox-advisors-backend.onrender.com/api/contact', contactData, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       alert('Thank you for your message! We will get back to you soon.');
@@ -229,7 +229,7 @@ export default function EnhancedWebsitePreview() {
     setChatInput('');
     
     try {
-      const response = await axios.post('http://localhost:5000/api/chat', { message: chatInput }, {
+      const response = await axios.post('https://wilcox-advisors-backend.onrender.com/api/chat', { message: chatInput }, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       setChatMessages(prev => [...prev, { text: response.data.reply, sender: 'ai' }]);
@@ -246,7 +246,7 @@ export default function EnhancedWebsitePreview() {
     setClientChatInput('');
     
     try {
-      const response = await axios.post('http://localhost:5000/api/client/chat', { message: clientChatInput }, {
+      const response = await axios.post('https://wilcox-advisors-backend.onrender.com/api/client/chat', { message: clientChatInput }, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       setClientChatMessages(prev => [...prev, { text: response.data.reply, sender: 'ai' }]);
@@ -262,7 +262,7 @@ export default function EnhancedWebsitePreview() {
       return;
     }
     try {
-      const response = await axios.post('http://localhost:5000/api/login', loginData);
+      const response = await axios.post('https://wilcox-advisors-backend.onrender.com/api/login', loginData);
       localStorage.setItem('token', response.data.token);
       setIsLoggedIn(true);
       setIsAdmin(response.data.isAdmin);
@@ -284,7 +284,7 @@ export default function EnhancedWebsitePreview() {
     const uploadFormData = new FormData();
     uploadFormData.append('file', file);
     try {
-      await axios.post('http://localhost:5000/api/upload', uploadFormData, {
+      await axios.post('https://wilcox-advisors-backend.onrender.com/api/upload', uploadFormData, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       alert('File uploaded successfully!');
@@ -301,11 +301,11 @@ export default function EnhancedWebsitePreview() {
   const handleBlogSave = async () => {
     try {
       if (editingBlog._id) {
-        await axios.put(`http://localhost:5000/api/blog/${editingBlog._id}`, editingBlog, {
+        await axios.put(`https://wilcox-advisors-backend.onrender.com/api/blog/${editingBlog._id}`, editingBlog, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
       } else {
-        await axios.post('http://localhost:5000/api/blog', editingBlog, {
+        await axios.post('https://wilcox-advisors-backend.onrender.com/api/blog', editingBlog, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
       }
@@ -324,7 +324,7 @@ export default function EnhancedWebsitePreview() {
 
   const handleContentSave = async () => {
     try {
-      await axios.post('http://localhost:5000/api/admin/content', editingContent, {
+      await axios.post('https://wilcox-advisors-backend.onrender.com/api/admin/content', editingContent, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       setDashboardData(prev => ({ ...prev, [editingContent.section]: editingContent.value }));
@@ -647,10 +647,10 @@ export default function EnhancedWebsitePreview() {
                         type="text"
                         value={clientChatInput}
                         onChange={(e) => setClientChatInput(e.target.value)}
-                        className="flex-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 border rounded-l-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Ask a question..."
                       />
-                      <button type="submit" className="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-900">
+                      <button type="submit" className="bg-blue-800 text-white px-4 py-2 rounded-r-md hover:bg-blue-900">
                         Send
                       </button>
                     </form>

@@ -5,9 +5,49 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #ffffff; /* White background for clean look */
+  line-height: 1.6; /* Better readability */
+  color: #333; /* Dark gray text for contrast */
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50; /* Professional blue-gray for headings */
+  margin-bottom: 0.5rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+.container {
+  max-width: 1200px; /* Limit width for readability */
+  margin: 0 auto; /* Center content */
+  padding: 20px; /* Add padding for spacing */
+}
+
+a {
+  color: #3498db; /* Blue links for navigation */
+  text-decoration: none; /* Remove underlines */
+}
+
+a:hover {
+  text-decoration: underline; /* Add underline on hover */
+}
+
+button, .button {
+  background-color: #3498db; /* Blue buttons */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer;
+}
+
+button:hover, .button:hover {
+  background-color: #2980b9; /* Darker blue on hover */
 }

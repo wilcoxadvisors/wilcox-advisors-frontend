@@ -233,21 +233,23 @@ export default function WilcoxAdvisors() {
   };
 
   // Chat handlers
-  const handleChatSubmit = async (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
-    const userMessage = { text: chatInput, sender: 'user' };
-    setChatMessages(prev => [...prev, userMessage]);
-    setChatInput('');
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/chat`, { message: chatInput }, {
-      headers: { Authorization: `Bearer ${token}` } // Explicitly send token
+const handleChatSubmit = async (e) => {
+  e.preventDefault();
+  if (!chatInput.trim()) return;
+  const userMessage = { text: chatInput, sender: 'user' };
+  setChatMessages(prev => [...prev, userMessage]);
+  setChatInput('');
+  const token = localStorage.getItem('token'); // Optionally check for token
+  try {
+    const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/chat`, { message: chatInput }, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {} // Send token if exists, otherwise empty
     });
-      setChatMessages(prev => [...prev, { text: response.data.reply, sender: 'ai' }]);
-    } catch (error) {
-      setChatMessages(prev => [...prev, { text: 'Sorry, something went wrong.', sender: 'ai' }]);
-    }
-  };
+    setChatMessages(prev => [...prev, { text: response.data.reply, sender: 'ai' }]);
+  } catch (error) {
+    console.error('Chat request failed:', error.response ? error.response.data : error.message);
+    setChatMessages(prev => [...prev, { text: 'Sorry, something went wrong.', sender: 'ai' }]);
+  }
+};
 
   const handleClientChatSubmit = async (e) => {
     e.preventDefault();

@@ -122,9 +122,11 @@ export default function WilcoxAdvisors() {
     try {
       const response = await axios.get(
         isAdmin 
-          ? `${process.env.REACT_APP_API_URL}/api/admin/dashboard` 
-          : `${process.env.REACT_APP_API_URL}/api/client/dashboard`
-      );
+       ? `${process.env.REACT_APP_API_URL}/api/admin/dashboard` 
+        : `${process.env.REACT_APP_API_URL}/api/client/dashboard`
+    , {
+      headers: { Authorization: `Bearer ${token}` } // Explicitly send token
+    });
       setDashboardData(prev => ({ ...prev, ...response.data }));
       if (!isAdmin && response.data.clientChat) {
         setClientChatMessages(response.data.clientChat);

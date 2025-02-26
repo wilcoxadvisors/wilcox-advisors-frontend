@@ -238,7 +238,9 @@ export default function WilcoxAdvisors() {
     setChatMessages(prev => [...prev, userMessage]);
     setChatInput('');
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/chat`, { message: chatInput });
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/chat`, { message: chatInput }, {
+      headers: { Authorization: `Bearer ${token}` } // Explicitly send token
+    });
       setChatMessages(prev => [...prev, { text: response.data.reply, sender: 'ai' }]);
     } catch (error) {
       setChatMessages(prev => [...prev, { text: 'Sorry, something went wrong.', sender: 'ai' }]);

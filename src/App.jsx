@@ -54,6 +54,7 @@ const checklistFormFields = [
 
 export default function WilcoxAdvisors() {
   const navigate = useNavigate();
+
   // State declarations
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showConsultationForm, setShowConsultationForm] = useState(false);
@@ -105,7 +106,6 @@ export default function WilcoxAdvisors() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setIsLoggedIn(true);
       fetchBlogPosts();
       fetchDashboardData();
@@ -119,20 +119,21 @@ export default function WilcoxAdvisors() {
 
   // Fetch dashboard data based on user role
   const fetchDashboardData = async () => {
+    const token = localStorage.getItem('token'); // Use localStorage to get the token
     try {
       const response = await axios.get(
         isAdmin 
-       ? `${process.env.REACT_APP_API_URL}/api/admin/dashboard` 
-        : `${process.env.REACT_APP_API_URL}/api/client/dashboard`
-    , {
-      headers: { Authorization: `Bearer ${token}` } // Explicitly send token
-    });
+          ? `${process.env.REACT_APP_API_URL}/api/admin/dashboard` 
+          : `${process.env.REACT_APP_API_URL}/api/client/dashboard`
+      , {
+        headers: token ? { Authorization: `Bearer ${token}` } : {} // Send token if exists, otherwise empty
+      });
       setDashboardData(prev => ({ ...prev, ...response.data }));
       if (!isAdmin && response.data.clientChat) {
         setClientChatMessages(response.data.clientChat);
       }
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
+      console.error('Failed to fetch dashboard data:', error.response ? error.response.data : error.message);
     }
   };
 
@@ -233,23 +234,28 @@ export default function WilcoxAdvisors() {
   };
 
   // Chat handlers
-const handleChatSubmit = async (e) => {
-  e.preventDefault();
-  if (!chatInput.trim()) return;
-  const userMessage = { text: chatInput, sender: 'user' };
-  setChatMessages(prev => [...prev, userMessage]);
-  setChatInput('');
-  const token = localStorage.getItem('token'); // Optionally check for token
-  try {
-    const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/chat`, { message: chatInput }, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {} // Send token if exists, otherwise empty
-    });
-    setChatMessages(prev => [...prev, { text: response.data.reply, sender: 'ai' }]);
-  } catch (error) {
-    console.error('Chat request failed:', error.response ? error.response.data : error.message);
-    setChatMessages(prev => [...prev, { text: 'Sorry, something went wrong.', sender: 'ai' }]);
-  }
-};
+  const handleChatSubmit = async (e) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+    const userMessage = { text: chatInput, sender: 'user' };
+    setChatMessages(prev => [...prev, userMessage]);
+    setChatInput('');
+    const token = localStorage.getItem('token'); // Optionally check for token
+    try {
+      console.log('Chat request details:', {
+        url: `${process.env.REACT_APP_API_URL}/api/chat`,
+        token: token ? 'Present' : 'Missing',
+        message: chatInput
+      });
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/chat`, { message: chatInput }, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {} // Send token if exists
+      });
+      setChatMessages(prev => [...prev, { text: response.data.reply, sender: 'ai' }]);
+    } catch (error) {
+      console.error('Chat request failed:', error.response ? error.response.data : error.message);
+      setChatMessages(prev => [...prev, { text: 'Sorry, something went wrong.', sender: 'ai' }]);
+    }
+  };
 
   const handleClientChatSubmit = async (e) => {
     e.preventDefault();
@@ -414,7 +420,7 @@ const handleChatSubmit = async (e) => {
                 Schedule Free Consultation
                </button>
               <button 
-                onClick={() => navigate('/learn-more')} // Ensure this is correct
+                onClick={() => navigate('/learn-more')} 
                 className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-800 transition duration-200"
               >
                 Learn More

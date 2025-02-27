@@ -6,11 +6,14 @@ import LearnMore from './pages/LearnMore'; // Learn More page component
 import AdminDashboard from './components/AdminDashboard'; // Admin dashboard component
 import ClientDashboard from './components/ClientDashboard'; // Client dashboard component
 import { AdminProtectedRoute, ClientProtectedRoute } from './components/ProtectedRoutes'; // Protected route components
+import Header from './components/Header'; // Header component
+import Footer from './components/Footer'; // Footer component
 import './index.css'; // Global styles (assumed to exist)
 
 ReactDOM.render(
   <React.StrictMode>
     <Router>
+      <Header /> {/* Header appears on every page */}
       <Routes>
         {/* Home page route */}
         <Route path="/" element={<Home />} />
@@ -38,6 +41,7 @@ ReactDOM.render(
           }
         />
       </Routes>
+      <Footer /> {/* Footer appears on every page */}
     </Router>
   </React.StrictMode>,
   document.getElementById('root') // Renders the app into the DOM element with id="root" in index.html

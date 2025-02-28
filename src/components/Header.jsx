@@ -28,7 +28,9 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginM
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <span className="text-2xl text-blue-800 font-bold">WILCOX ADVISORS</span>
+            <Link to="/" className="text-2xl text-blue-800 font-bold hover:text-blue-900 transition duration-200">
+              WILCOX ADVISORS
+            </Link>
           </div>
           <div className="hidden md:flex items-center space-x-8">
             <button onClick={() => handleSectionClick('services')} className="text-gray-700 hover:text-blue-800">Services</button>

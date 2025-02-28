@@ -2,9 +2,18 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { X } from 'lucide-react';
 
-function LoginModal({ setShowLogin, setIsLoggedIn, setIsAdmin }) {
+function LoginModal({ setShowLogin, setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+
+  // Function to close modal that works with either prop name
+  const closeModal = () => {
+    if (typeof setShowLogin === 'function') {
+      setShowLogin(false);
+    } else if (typeof setShowLoginModal === 'function') {
+      setShowLoginModal(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -23,7 +32,7 @@ function LoginModal({ setShowLogin, setIsLoggedIn, setIsAdmin }) {
       localStorage.setItem('isAdmin', response.data.isAdmin);
       setIsLoggedIn(true);
       setIsAdmin(response.data.isAdmin);
-      setShowLogin(false);
+      closeModal();
       setLoginData({ email: '', password: '' });
       setError('');
     } catch (error) {
@@ -36,7 +45,7 @@ function LoginModal({ setShowLogin, setIsLoggedIn, setIsAdmin }) {
       <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-blue-800">Client Login</h2>
-          <button onClick={() => setShowLogin(false)} className="text-gray-500 hover:text-gray-700">
+          <button onClick={closeModal} className="text-gray-500 hover:text-gray-700">
             <X size={24} />
           </button>
         </div>

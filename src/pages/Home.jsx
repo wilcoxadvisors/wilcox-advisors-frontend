@@ -126,7 +126,7 @@ function Home({ setShowConsultationForm }) {
     } else {
       try {
         await axios.post(`${process.env.REACT_APP_API_URL}/api/consultation`, formData);
-        alert('Thank you! Your request has been submitted. We'll contact you shortly!');
+        alert("Thank you! Your request has been submitted. We'll contact you shortly!");
         setShowConsultationForm(false);
         setCurrentStep(0);
         setFormData({ 

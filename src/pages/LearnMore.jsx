@@ -1,8 +1,21 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Keep for Contact Us button
+import { useNavigate } from 'react-router-dom';
 
 function LearnMore() {
   const navigate = useNavigate();
+
+  const handleContactClick = () => {
+    // Navigate to home page first
+    navigate('/');
+    
+    // Then scroll to contact section after a short delay to ensure page loads
+    setTimeout(() => {
+      const contactSection = document.getElementById('contact');
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -20,7 +33,7 @@ function LearnMore() {
           </p>
           <div className="mt-8">
             <button
-              onClick={() => navigate('/#contact')}
+              onClick={handleContactClick}
               className="bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-900 transition duration-200"
             >
               Contact Us
@@ -28,14 +41,6 @@ function LearnMore() {
           </div>
         </section>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-6 mt-12">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-sm sm:text-base">© 2025 Wilcox Advisors. All rights reserved.</p>
-          <a href="/#contact" className="text-blue-300 hover:text-blue-100 text-sm sm:text-base font-medium">Contact Us</a>
-        </div>
-      </footer>
     </div>
   );
 }

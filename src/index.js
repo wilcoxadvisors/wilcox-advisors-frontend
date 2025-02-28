@@ -16,13 +16,25 @@ import './index.css'; // Global styles (assumed to exist)
 function App() {
   const [showConsultationForm, setShowConsultationForm] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('token') !== null);
+  const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin') === 'true');
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('isAdmin');
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+  };
 
   return (
     <Router>
       {/* Pass both modal setters to Header for triggering the modals */}
       <Header 
         setShowConsultationForm={setShowConsultationForm} 
-        setShowLoginModal={setShowLoginModal} 
+        setShowLoginModal={setShowLoginModal}
+        isLoggedIn={isLoggedIn}
+        isAdmin={isAdmin}
+        handleLogout={handleLogout}
       />
       <Routes>
         {/* Home page route with consultation form trigger */}
@@ -57,7 +69,11 @@ function App() {
         <ConsultationFormModal setShowConsultationForm={setShowConsultationForm} />
       )}
       {showLoginModal && (
-        <LoginModal setShowLoginModal={setShowLoginModal} />
+        <LoginModal 
+          setShowLoginModal={setShowLoginModal} 
+          setIsLoggedIn={setIsLoggedIn}
+          setIsAdmin={setIsAdmin}
+        />
       )}
     </Router>
   );

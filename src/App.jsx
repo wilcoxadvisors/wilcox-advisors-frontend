@@ -34,6 +34,9 @@ export default function App() {
     if (token) {
       setIsLoggedIn(true);
       setIsAdmin(adminStatus);
+    } else {
+      setIsLoggedIn(false);
+      setIsAdmin(false);
     }
   }, []);
 
@@ -54,7 +57,7 @@ export default function App() {
         <Route
           path="/admin-dashboard"
           element={
-            <AdminProtectedRoute>
+            <AdminProtectedRoute isLoggedIn={isLoggedIn} isAdmin={isAdmin}>
               <AdminDashboard />
             </AdminProtectedRoute>
           }
@@ -62,12 +65,11 @@ export default function App() {
         <Route
           path="/client-dashboard"
           element={
-            <ClientProtectedRoute>
+            <ClientProtectedRoute isLoggedIn={isLoggedIn} isAdmin={isAdmin}>
               <ClientDashboard />
             </ClientProtectedRoute>
           }
         />
-        {/* Existing route for learn-more can be added here if needed */}
       </Routes>
 
       {/* Modals rendered conditionally */}

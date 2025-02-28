@@ -9,18 +9,23 @@ import { AdminProtectedRoute, ClientProtectedRoute } from './components/Protecte
 import Header from './components/Header'; // Header component
 import Footer from './components/Footer'; // Footer component
 import ConsultationFormModal from './components/ConsultationFormModal'; // Consultation form modal component
+import LoginModal from './components/LoginModal'; // Login modal component
 import './index.css'; // Global styles (assumed to exist)
 
-// Wrapper component to manage modal state
+// Wrapper component to manage modal states
 function App() {
   const [showConsultationForm, setShowConsultationForm] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   return (
     <Router>
-      {/* Pass setShowConsultationForm to Header for triggering the modal */}
-      <Header setShowConsultationForm={setShowConsultationForm} />
+      {/* Pass both modal setters to Header for triggering the modals */}
+      <Header 
+        setShowConsultationForm={setShowConsultationForm} 
+        setShowLoginModal={setShowLoginModal} 
+      />
       <Routes>
-        {/* Home page route with modal trigger */}
+        {/* Home page route with consultation form trigger */}
         <Route
           path="/"
           element={<Home setShowConsultationForm={setShowConsultationForm} />}
@@ -47,9 +52,12 @@ function App() {
         />
       </Routes>
       <Footer />
-      {/* Render the modal conditionally */}
+      {/* Render the modals conditionally */}
       {showConsultationForm && (
         <ConsultationFormModal setShowConsultationForm={setShowConsultationForm} />
+      )}
+      {showLoginModal && (
+        <LoginModal setShowLoginModal={setShowLoginModal} />
       )}
     </Router>
   );

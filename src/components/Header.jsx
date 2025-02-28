@@ -2,8 +2,17 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
-function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin }) {
+function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginModal }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Handle either prop name for the login modal
+  const openLoginModal = () => {
+    if (typeof setShowLogin === 'function') {
+      setShowLogin(true);
+    } else if (typeof setShowLoginModal === 'function') {
+      setShowLoginModal(true);
+    }
+  };
 
   const handleSectionClick = (section) => {
     if (window.location.pathname === '/') {
@@ -32,7 +41,7 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin }) {
                 <button onClick={handleLogout} className="text-gray-700 hover:text-blue-800">Logout</button>
               </>
             ) : (
-              <button onClick={() => setShowLogin(true)} className="text-gray-700 hover:text-blue-800">Login</button>
+              <button onClick={openLoginModal} className="text-gray-700 hover:text-blue-800">Login</button>
             )}
           </div>
           <div className="md:hidden">
@@ -54,7 +63,7 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin }) {
                   <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800">Logout</button>
                 </>
               ) : (
-                <button onClick={() => { setShowLogin(true); setIsMobileMenuOpen(false); }} className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800">Login</button>
+                <button onClick={() => { openLoginModal(); setIsMobileMenuOpen(false); }} className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800">Login</button>
               )}
             </div>
           </div>

@@ -199,7 +199,13 @@ function Home({ setShowConsultationForm }) {
             <h1 className="text-4xl md:text-5xl font-bold mb-6">{dashboardData.hero.headline}</h1>
             <p className="text-xl mb-8">{dashboardData.hero.subtext}</p>
             <div className="space-x-4">
-              <button onClick={() => setShowConsultationForm(true)} className="bg-white text-blue-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-200">
+              <button 
+                onClick={() => {
+                  console.log('Schedule Free Consultation clicked');
+                  setShowConsultationForm(true);
+                }} 
+                className="bg-white text-blue-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-200"
+              >
                 Schedule Free Consultation
               </button>
               <button 

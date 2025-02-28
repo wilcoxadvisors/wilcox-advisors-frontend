@@ -126,7 +126,7 @@ function Home({ setShowConsultationForm }) {
     } else {
       try {
         await axios.post(`${process.env.REACT_APP_API_URL}/api/consultation`, formData);
-        alert('Thank you! Your request has been submitted. We’ll contact you shortly!');
+        alert('Thank you! Your request has been submitted. We'll contact you shortly!');
         setShowConsultationForm(false);
         setCurrentStep(0);
         setFormData({ 
@@ -149,7 +149,7 @@ function Home({ setShowConsultationForm }) {
     if (!isChecklistValid()) return alert('Please fill out all required fields.');
     try {
       await axios.post(`${process.env.REACT_APP_API_URL}/api/checklist`, checklistData);
-      alert('Thank you! Check your email for the Financial Checklist!');
+      alert('Thank you! Your Financial Checklist has been sent to your email!');
       setShowChecklistForm(false);
       setChecklistData({ name: '', email: '', companyName: '', revenueRange: '' });
     } catch (error) {

@@ -202,7 +202,12 @@ function Home({ setShowConsultationForm }) {
               <button 
                 onClick={() => {
                   console.log('Schedule Free Consultation clicked');
-                  setShowConsultationForm(true);
+                  if (typeof setShowConsultationForm === 'function') {
+                    setShowConsultationForm(true);
+                    console.log('setShowConsultationForm called successfully');
+                  } else {
+                    console.error('setShowConsultationForm is not a function');
+                  }
                 }} 
                 className="bg-white text-blue-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-200"
               >

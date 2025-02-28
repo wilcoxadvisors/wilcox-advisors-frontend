@@ -1,26 +1,11 @@
 import React from 'react';
-import { ArrowLeft } from 'lucide-react'; // Import ArrowLeft icon from lucide-react for the back button
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for programmatic navigation
+import { useNavigate } from 'react-router-dom'; // Keep for Contact Us button
 
 function LearnMore() {
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <header className="bg-white shadow-md sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-blue-800">Wilcox Advisors</h1>
-          <button
-            onClick={() => navigate('/')} // Navigate back to the homepage
-            className="flex items-center gap-2 bg-blue-800 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-900 transition duration-200"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back to Home
-          </button>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-12">
         <section className="space-y-6">
@@ -30,12 +15,12 @@ function LearnMore() {
           </p>
           <p className="text-lg text-gray-700 leading-relaxed">
             Explore our comprehensive services, including bookkeeping, cash flow management, custom reporting, budgeting & forecasting, 
-            monthly financial packages, and outsourced controller/CFO support. Whether you’re a startup or a growing company, 
+            monthly financial packages, and outsourced controller/CFO support. Whether you're a startup or a growing company, 
             we offer solutions designed to scale with your business needs. Contact us today to discover how we can help your business thrive!
           </p>
           <div className="mt-8">
             <button
-              onClick={() => navigate('/#contact')} // Navigate to the contact section on the homepage
+              onClick={() => navigate('/#contact')}
               className="bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-900 transition duration-200"
             >
               Contact Us
@@ -44,7 +29,7 @@ function LearnMore() {
         </section>
       </main>
 
-      {/* Footer (Optional, for consistency with your App.jsx) */}
+      {/* Footer */}
       <footer className="bg-gray-800 text-white py-6 mt-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <p className="text-sm sm:text-base">© 2025 Wilcox Advisors. All rights reserved.</p>

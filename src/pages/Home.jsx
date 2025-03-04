@@ -193,20 +193,17 @@ function Home({ setShowConsultationForm }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Hero Section - Fixed width issue */}
       <div className="bg-gradient-to-r from-blue-800 to-blue-900 text-white py-20">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="md:w-2/3">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
+          <div className="w-full md:w-2/3">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">{dashboardData.hero.headline}</h1>
             <p className="text-xl mb-8">{dashboardData.hero.subtext}</p>
             <div className="space-x-4">
               <button 
                 onClick={() => {
-                  console.log('Schedule Free Consultation clicked');
                   if (typeof setShowConsultationForm === 'function') {
                     setShowConsultationForm(true);
-                    console.log('setShowConsultationForm called successfully');
-                  } else {
-                    console.error('setShowConsultationForm is not a function');
                   }
                 }} 
                 className="bg-white text-blue-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-200"
@@ -224,8 +221,9 @@ function Home({ setShowConsultationForm }) {
         </div>
       </div>
 
+      {/* Checklist Section - Fixed width issue */}
       <section className="py-16 bg-gray-100">
-        <div className="max-w-6xl mx-auto px-4 text-center">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full text-center">
           <h2 className="text-3xl font-bold text-blue-800 mb-4">Free Financial Checklist</h2>
           <p className="text-lg text-gray-700 mb-6 max-w-2xl mx-auto">
             Download our checklist to streamline your small business finances—simple steps to save time and money!
@@ -236,8 +234,9 @@ function Home({ setShowConsultationForm }) {
         </div>
       </section>
 
+      {/* Services Section - Fixed width issue */}
       <section id="services" className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
           <h2 className="text-3xl font-bold text-blue-800 mb-10 text-center">Our Small Business Services</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {servicesList.map((service) => (
@@ -250,8 +249,9 @@ function Home({ setShowConsultationForm }) {
         </div>
       </section>
 
+      {/* Blog Section - Fixed width issue */}
       <section id="blog" className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
           <h2 className="text-3xl font-bold text-blue-800 mb-10 text-center">Blog & Updates</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {blogPosts.map((post) => (
@@ -267,8 +267,9 @@ function Home({ setShowConsultationForm }) {
         </div>
       </section>
 
+      {/* Testimonials Section - Fixed width issue */}
       <section className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
           <h2 className="text-3xl font-bold text-blue-800 mb-10 text-center">What Small Businesses Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
@@ -283,15 +284,17 @@ function Home({ setShowConsultationForm }) {
         </div>
       </section>
 
+      {/* About Section - Fixed width issue */}
       <section id="about" className="py-16 bg-gray-100">
-        <div className="max-w-6xl mx-auto px-4 text-center">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full text-center">
           <h2 className="text-3xl font-bold text-blue-800 mb-8">About Wilcox Advisors</h2>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto">{dashboardData.about}</p>
         </div>
       </section>
 
+      {/* Contact Section - Fixed width issue */}
       <section id="contact" className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
           <h2 className="text-3xl font-bold text-blue-800 mb-10 text-center">Contact Us</h2>
           <div className="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
             <p className="text-gray-700 mb-6 text-center">
@@ -354,6 +357,7 @@ function Home({ setShowConsultationForm }) {
         </div>
       </section>
 
+      {/* Checklist Modal */}
       {showChecklistForm && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md sm:max-w-lg">
@@ -405,6 +409,7 @@ function Home({ setShowConsultationForm }) {
         </div>
       )}
 
+      {/* Chat Widget */}
       <div className="fixed bottom-4 right-4 z-40">
         <button onClick={() => setIsChatOpen(!isChatOpen)} className="bg-blue-800 text-white p-3 rounded-full shadow-lg hover:bg-blue-900 transition duration-200">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

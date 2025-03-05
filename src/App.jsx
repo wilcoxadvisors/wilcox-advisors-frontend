@@ -10,7 +10,7 @@ import LoginModal from './components/LoginModal';
 import ConsultationFormModal from './components/ConsultationFormModal';
 import { AdminProtectedRoute, ClientProtectedRoute } from './components/ProtectedRoutes';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { UIProvider, useUI } from './contexts/UIContext'; // Unchanged, already correct
+import { UIProvider, useUI } from './contexts/UIContext';
 
 export default function App() {
   return (

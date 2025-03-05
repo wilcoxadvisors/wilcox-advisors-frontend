@@ -12,14 +12,6 @@ export function UIProvider({ children }) {
   const [showLogin, setShowLogin] = useState(false);
   const [showConsultationForm, setShowConsultationForm] = useState(false);
 
-  useEffect(() => {
-    console.log('UIProvider - showConsultationForm updated to:', showConsultationForm);
-  }, [showConsultationForm]);
-
-  useEffect(() => {
-    console.log('UIProvider - showLogin updated to:', showLogin);
-  }, [showLogin]);
-
   const value = { 
     showLogin, 
     setShowLogin, 

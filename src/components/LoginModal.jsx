@@ -25,7 +25,6 @@ function LoginModal() {
     }
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/login`, loginData);
-      // Use the login function from AuthContext instead of prop methods
       login(response.data.token, response.data.isAdmin);
       setShowLogin(false);
       setLoginData({ email: '', password: '' });

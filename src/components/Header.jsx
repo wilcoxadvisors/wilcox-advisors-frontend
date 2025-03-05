@@ -111,8 +111,61 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowConsul
         {isMobileMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white" role="menu">
-              {/* Mobile menu items */}
-              {/* ... rest of your mobile menu code ... */}
+              <button 
+                onClick={() => handleSectionClick('services')} 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-800 w-full text-left" 
+                aria-label="Services section"
+              >
+                Services
+              </button>
+              <button 
+                onClick={() => handleSectionClick('blog')} 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-800 w-full text-left" 
+                aria-label="Blog section"
+              >
+                Blog
+              </button>
+              <button 
+                onClick={() => handleSectionClick('about')} 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-800 w-full text-left" 
+                aria-label="About section"
+              >
+                About
+              </button>
+              <button 
+                onClick={() => handleSectionClick('contact')} 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-800 w-full text-left" 
+                aria-label="Contact section"
+              >
+                Contact
+              </button>
+              {auth.isLoggedIn ? (
+                <>
+                  <Link 
+                    to={auth.isAdmin ? '/admin-dashboard' : '/client-dashboard'} 
+                    className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left" 
+                    onClick={() => setIsMobileMenuOpen(false)} 
+                    aria-label={auth.isAdmin ? "Admin Dashboard" : "Client Dashboard"}
+                  >
+                    Dashboard
+                  </Link>
+                  <button 
+                    onClick={() => { auth.logout(); setIsMobileMenuOpen(false); }} 
+                    className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800" 
+                    aria-label="Logout"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <button 
+                  onClick={() => { ui.setShowLogin(true); setIsMobileMenuOpen(false); }} 
+                  className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left"
+                  aria-label="Login"
+                >
+                  Login
+                </button>
+              )}
             </div>
           </div>
         )}

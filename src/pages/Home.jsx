@@ -1,9 +1,7 @@
 // src/pages/Home.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useUI } from '../contexts/UIContext'; // Import useUI
-
-// Import section components
+import { useUI } from '../../contexts/UIContext'; // Changed to match HeroSection
 import HeroSection from '../components/sections/HeroSection';
 import ChecklistSection from '../components/sections/ChecklistSection';
 import ServicesSection from '../components/sections/ServicesSection';
@@ -11,14 +9,9 @@ import BlogSection from '../components/sections/BlogSection';
 import TestimonialsSection from '../components/sections/TestimonialsSection';
 import AboutSection from '../components/sections/AboutSection';
 import ContactSection from '../components/sections/ContactSection';
-
-// Import modal components
 import ChecklistModal from '../components/modals/ChecklistModal';
-
-// Import common components
 import ChatWidget from '../components/common/ChatWidget';
 
-// Service list data
 const servicesList = [
   { id: 'bookkeeping', title: 'Bookkeeping', description: 'Full-service bookkeeping including transaction coding and reconciliations' },
   { id: 'monthlyFinancials', title: 'Monthly Financial Package', description: 'Comprehensive monthly financial statements with analysis' },
@@ -29,13 +22,11 @@ const servicesList = [
 ];
 
 function Home() {
-  // State management
   const [showChecklistForm, setShowChecklistForm] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [blogPosts, setBlogPosts] = useState([]);
-  const { showConsultationForm } = useUI(); // Access UI context
+  const { showConsultationForm } = useUI();
 
-  // Dashboard data (would ideally come from API or context)
   const dashboardData = {
     hero: { 
       headline: "Financial Expertise for Your Business Success", 
@@ -44,12 +35,10 @@ function Home() {
     about: "At Wilcox Advisors, we specialize in financial solutions for small businesses. From startups to growing companies, we provide the expertise you need to succeed—built to scale with you every step of the way.",
   };
 
-  // Debug log to confirm consultation form state
   useEffect(() => {
     console.log('Home.jsx - showConsultationForm:', showConsultationForm);
   }, [showConsultationForm]);
 
-  // Fetch blog posts on component mount
   useEffect(() => {
     fetchBlogPosts();
   }, []);
@@ -72,18 +61,8 @@ function Home() {
       <TestimonialsSection />
       <AboutSection aboutText={dashboardData.about} />
       <ContactSection />
-
-      {showChecklistForm && (
-        <ChecklistModal 
-          isOpen={showChecklistForm}
-          onClose={() => setShowChecklistForm(false)}
-        />
-      )}
-
-      <ChatWidget 
-        isOpen={isChatOpen}
-        setIsOpen={setIsChatOpen}
-      />
+      {showChecklistForm && <ChecklistModal isOpen={showChecklistForm} onClose={() => setShowChecklistForm(false)} />}
+      <ChatWidget isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
     </div>
   );
 }

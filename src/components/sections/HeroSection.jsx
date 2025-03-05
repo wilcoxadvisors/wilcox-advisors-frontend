@@ -1,7 +1,7 @@
 // src/components/sections/HeroSection.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUI } from '../../contexts/UIContext'; // Already correct
+import { useUI } from 'contexts/UIContext'; // Absolute import
 
 export default function HeroSection({ dashboardData }) {
   const navigate = useNavigate();

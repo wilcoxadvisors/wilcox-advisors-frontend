@@ -9,8 +9,8 @@ import ClientDashboard from './components/ClientDashboard';
 import LoginModal from './components/LoginModal';
 import ConsultationFormModal from './components/ConsultationFormModal';
 import { AdminProtectedRoute, ClientProtectedRoute } from './components/ProtectedRoutes';
-import { AuthProvider, useAuth } from './contexts/AuthContext'; // Import the hook
-import { UIProvider, useUI } from './contexts/UIContext'; // Import the hook
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { UIProvider, useUI } from './contexts/UIContext';
 
 export default function App() {
   return (
@@ -38,16 +38,15 @@ function AppContent() {
         isLoggedIn={isLoggedIn}
         isAdmin={isAdmin}
         handleLogout={handleLogout}
-        setShowLogin={setShowLogin}
-        setShowConsultationForm={setShowConsultationForm}
+        setShowLoginModal={setShowLogin}
       />
 
       <Routes>
-        <Route path="/" element={<Home setShowConsultationForm={setShowConsultationForm} />} />
+        <Route path="/" element={<Home />} />
         <Route
           path="/admin-dashboard"
           element={
-            <AdminProtectedRoute isLoggedIn={isLoggedIn} isAdmin={isAdmin}>
+            <AdminProtectedRoute>
               <AdminDashboard />
             </AdminProtectedRoute>
           }
@@ -55,14 +54,14 @@ function AppContent() {
         <Route
           path="/client-dashboard"
           element={
-            <ClientProtectedRoute isLoggedIn={isLoggedIn} isAdmin={isAdmin}>
+            <ClientProtectedRoute>
               <ClientDashboard />
             </ClientProtectedRoute>
           }
         />
       </Routes>
 
-      {showLogin && <LoginModal />}
+      {showLogin && <LoginModal setShowLoginModal={setShowLogin} setIsLoggedIn={setIsLoggedIn} setIsAdmin={setIsAdmin} />}
       {showConsultationForm && <ConsultationFormModal />}
 
       <Footer />

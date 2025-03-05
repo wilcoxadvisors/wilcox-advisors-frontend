@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import api from '../utils/api';
+import { getCsrfToken, setCsrfToken } from '../utils/csrf';
 
 function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Fetch CSRF token when component mounts
+    const fetchCsrfToken = async () => {
+      try {
+        const token = await getCsrfToken();
+        setCsrfToken(token);
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+    
+    fetchCsrfToken();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -23,13 +38,7 @@ function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
     setError('');
     
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:10000'}/api/login`, 
-        loginData,
-        { withCredentials: true }
-      );
-      
-      const isAdmin = response.data.isAdmin;
+      const response = await api.post('/login', loginData);
       
       // Update app state
       if (typeof setIsLoggedIn === 'function') {
@@ -37,7 +46,7 @@ function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
       }
       
       if (typeof setIsAdmin === 'function') {
-        setIsAdmin(isAdmin);
+        setIsAdmin(response.data.isAdmin);
       }
       
       // Close modal

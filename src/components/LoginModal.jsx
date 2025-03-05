@@ -23,13 +23,13 @@ function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
     setError('');
     
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:10000'}/api/login`, loginData);
-      const token = response.data.token;
-      const isAdmin = response.data.isAdmin;
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL || 'http://localhost:10000'}/api/login`, 
+        loginData,
+        { withCredentials: true }
+      );
       
-      // Save to localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('isAdmin', isAdmin);
+      const isAdmin = response.data.isAdmin;
       
       // Update app state
       if (typeof setIsLoggedIn === 'function') {

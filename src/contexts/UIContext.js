@@ -1,7 +1,6 @@
-// src/contexts/UIContext.js
 import React, { createContext, useContext, useState } from 'react';
 
-const UIContext = createContext();
+const UIContext = createContext(null);
 
 export function UIProvider({ children }) {
   const [showLogin, setShowLogin] = useState(false);
@@ -20,5 +19,9 @@ export function UIProvider({ children }) {
 }
 
 export function useUI() {
-  return useContext(UIContext);
+  const context = useContext(UIContext);
+  if (context === null) {
+    throw new Error('useUI must be used within a UIProvider');
+  }
+  return context;
 }

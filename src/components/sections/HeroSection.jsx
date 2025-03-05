@@ -4,11 +4,11 @@ import { useUI } from '../../contexts/UIContext';
 
 export default function HeroSection({ dashboardData }) {
   const navigate = useNavigate();
-  const { setShowConsultationForm } = useUI();
+  const uiContext = useUI();
   
   const handleScheduleConsultation = () => {
-    if (typeof setShowConsultationForm === 'function') {
-      setShowConsultationForm(true);
+    if (uiContext && typeof uiContext.setShowConsultationForm === 'function') {
+      uiContext.setShowConsultationForm(true);
     }
   };
   

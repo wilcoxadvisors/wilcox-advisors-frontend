@@ -1,21 +1,22 @@
 // src/components/sections/HeroSection.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUI } from 'contexts/UIContext'; // Absolute import
+import { useUI } from '../../contexts/UIContext';
 
-export default function HeroSection({ dashboardData }) {
+export default function HeroSection({ dashboardData, setShowConsultationForm }) { // Add prop
   const navigate = useNavigate();
   const uiContext = useUI();
 
   const handleScheduleConsultation = () => {
     console.log('Button clicked!');
     if (uiContext && typeof uiContext.setShowConsultationForm === 'function') {
-      console.log('Setting consultation form to true');
+      console.log('Setting consultation form to true (context)');
       uiContext.setShowConsultationForm(true);
     } else {
       console.log('UI Context not available or setShowConsultationForm is not a function');
-      navigate('/consultation');
     }
+    setShowConsultationForm(true); // Use prop directly
+    console.log('Setting consultation form to true (prop)');
   };
 
   return (

@@ -2,14 +2,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
-function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginModal }) {
+function Header({ isLoggedIn, isAdmin, handleLogout, setShowLoginModal }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
-  const openLoginModal = () => {
+  const handleLoginClick = () => {
     if (typeof setShowLoginModal === 'function') {
       setShowLoginModal(true);
-    } else if (typeof setShowLogin === 'function') {
-      setShowLogin(true);
     }
   };
 
@@ -79,7 +77,7 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginM
               </>
             ) : (
               <button 
-                onClick={openLoginModal} 
+                onClick={handleLoginClick} 
                 className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition duration-200" 
                 aria-label="Login"
               >
@@ -148,7 +146,7 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginM
                 </>
               ) : (
                 <button 
-                  onClick={() => { openLoginModal(); setIsMobileMenuOpen(false); }} 
+                  onClick={() => { handleLoginClick(); setIsMobileMenuOpen(false); }} 
                   className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left"
                   aria-label="Login"
                 >

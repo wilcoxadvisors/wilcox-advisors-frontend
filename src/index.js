@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home'; // Home page component
-import LearnMore from './pages/LearnMore'; // Learn More page component
-import AdminDashboard from './components/AdminDashboard'; // Admin dashboard component
-import ClientDashboard from './components/ClientDashboard'; // Client dashboard component
-import { AdminProtectedRoute, ClientProtectedRoute } from './components/ProtectedRoutes'; // Protected route components
 import Header from './components/Header'; // Header component
 import Footer from './components/Footer'; // Footer component
 import ConsultationFormModal from './components/ConsultationFormModal'; // Consultation form modal component
 import LoginModal from './components/LoginModal'; // Login modal component
 import './index.css'; // Global styles (assumed to exist)
+
+// Lazy load components
+const Home = lazy(() => import('./pages/Home'));
+const LearnMore = lazy(() => import('./pages/LearnMore'));
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const ClientDashboard = lazy(() => import('./components/ClientDashboard'));
+const AdminProtectedRoute = lazy(() => import('./components/ProtectedRoutes').then(module => ({ default: module.AdminProtectedRoute })));
+const ClientProtectedRoute = lazy(() => import('./components/ProtectedRoutes').then(module => ({ default: module.ClientProtectedRoute })));
 
 // Wrapper component to manage modal states
 function App() {
@@ -36,33 +39,35 @@ function App() {
         isAdmin={isAdmin}
         handleLogout={handleLogout}
       />
-      <Routes>
-        {/* Home page route with consultation form trigger */}
-        <Route
-          path="/"
-          element={<Home setShowConsultationForm={setShowConsultationForm} />}
-        />
-        {/* Learn More page route */}
-        <Route path="/learn-more" element={<LearnMore />} />
-        {/* Protected Admin Dashboard route */}
-        <Route
-          path="/admin-dashboard"
-          element={
-            <AdminProtectedRoute>
-              <AdminDashboard />
-            </AdminProtectedRoute>
-          }
-        />
-        {/* Protected Client Dashboard route */}
-        <Route
-          path="/client-dashboard"
-          element={
-            <ClientProtectedRoute>
-              <ClientDashboard />
-            </ClientProtectedRoute>
-          }
-        />
-      </Routes>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          {/* Home page route with consultation form trigger */}
+          <Route
+            path="/"
+            element={<Home setShowConsultationForm={setShowConsultationForm} />}
+          />
+          {/* Learn More page route */}
+          <Route path="/learn-more" element={<LearnMore />} />
+          {/* Protected Admin Dashboard route */}
+          <Route
+            path="/admin-dashboard"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboard />
+              </AdminProtectedRoute>
+            }
+          />
+          {/* Protected Client Dashboard route */}
+          <Route
+            path="/client-dashboard"
+            element={
+              <ClientProtectedRoute>
+                <ClientDashboard />
+              </ClientProtectedRoute>
+            }
+          />
+        </Routes>
+      </Suspense>
       <Footer />
       {/* Render the modals conditionally */}
       {showConsultationForm && (

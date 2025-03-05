@@ -1,13 +1,32 @@
 // src/components/ManualJournalEntry.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useJournalEntryForm from '../hooks/useJournalEntryForm';
 import JournalHeader from './journal/JournalHeader';
 import JournalEntriesTable from './journal/JournalEntriesTable';
 import ActionButtons from './journal/ActionButtons';
+import axios from 'axios';
 
 function JournalEntrySystem({ onSuccess }) {
   const [showAdvancedFields, setShowAdvancedFields] = useState(false);
   const [showDetailFields, setShowDetailFields] = useState(false);
+  const [accountsList, setAccountsList] = useState([]);
+  
+  // Fetch existing accounts when component mounts
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/accounting/accounts`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setAccountsList(response.data.accounts);
+      } catch (error) {
+        console.error('Failed to fetch accounts:', error);
+      }
+    };
+    
+    fetchAccounts();
+  }, []);
   
   const {
     journalData,
@@ -22,8 +41,28 @@ function JournalEntrySystem({ onSuccess }) {
     addEntryRow,
     removeEntryRow,
     handleFileUpload,
-    handleSubmit
-  } = useJournalEntryForm(onSuccess);
+    handleSubmit,
+    handleAccountSelect
+  } = useJournalEntryForm(onSuccess, accountsList);
+
+  // Helper for displaying subledger information
+  const getSubledgerBadge = (accountNo) => {
+    if (!accountNo) return null;
+    
+    let subledgerType = '';
+    if (accountNo === '2000') subledgerType = 'AP';
+    else if (accountNo === '1110') subledgerType = 'AR';
+    else if (accountNo.startsWith('60')) subledgerType = 'Payroll';
+    else if (accountNo.startsWith('12')) subledgerType = 'Inventory';
+    else if (accountNo.startsWith('15')) subledgerType = 'Assets';
+    else return null;
+    
+    return (
+      <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">
+        {subledgerType}
+      </span>
+    );
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -51,12 +90,15 @@ function JournalEntrySystem({ onSuccess }) {
           journalData={journalData}
           entryErrors={entryErrors}
           handleEntryChange={handleEntryChange}
+          handleAccountSelect={handleAccountSelect}
           removeEntryRow={removeEntryRow}
           totals={totals}
           errors={errors}
           showDetailFields={showDetailFields}
           setShowDetailFields={setShowDetailFields}
           showAdvancedFields={showAdvancedFields}
+          accountsList={accountsList}
+          getSubledgerBadge={getSubledgerBadge}
         />
         
         <ActionButtons 

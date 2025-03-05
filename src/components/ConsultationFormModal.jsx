@@ -1,4 +1,3 @@
-// src/components/ConsultationFormModal.jsx
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
@@ -7,7 +6,7 @@ import FormProgress from './form/FormProgress';
 import CompanyInformationStep from './form/CompanyInformationStep';
 import ServicesSelectionStep from './form/ServicesSelectionStep';
 import FormNavigation from './form/FormNavigation';
-import { useUI } from '../contexts/UIContext'; // Import the UI context hook
+import { useUI } from '../contexts/UIContext';
 
 const servicesList = [
   { id: 'bookkeeping', title: 'Bookkeeping', description: 'Full-service bookkeeping including transaction coding and reconciliations' },
@@ -43,7 +42,6 @@ const formSteps = [
 ];
 
 function ConsultationFormModal() {
-  // Use the context instead of props
   const { setShowConsultationForm } = useUI();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -55,9 +53,11 @@ function ConsultationFormModal() {
   const handleFormSubmit = async (formData) => {
     setIsSubmitting(true);
     try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/api/consultation`, formData);
+      await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:10000'}/api/consultation`, formData);
       alert('Thank you! Your request has been submitted. We\'ll contact you shortly!');
-      setShowConsultationForm(false);
+      if (typeof setShowConsultationForm === 'function') {
+        setShowConsultationForm(false);
+      }
     } catch (error) {
       alert('Submission failed. Please try again.');
     } finally {
@@ -76,12 +76,18 @@ function ConsultationFormModal() {
     handleSubmit
   } = useMultiStepForm(formSteps, initialFormData, handleFormSubmit);
 
+  const handleClose = () => {
+    if (typeof setShowConsultationForm === 'function') {
+      setShowConsultationForm(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl max-h-[90vh] overflow-y-auto w-full max-w-md sm:max-w-lg md:max-w-3xl">
         <div className="sticky top-0 bg-white p-6 border-b flex justify-between items-center">
           <h2 className="text-2xl font-bold text-blue-800">Schedule Your Free Consultation</h2>
-          <button onClick={() => setShowConsultationForm(false)} className="text-gray-500 hover:text-gray-700">
+          <button onClick={handleClose} className="text-gray-500 hover:text-gray-700">
             <X size={24} />
           </button>
         </div>

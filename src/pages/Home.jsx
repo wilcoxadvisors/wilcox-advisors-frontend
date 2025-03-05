@@ -1,7 +1,7 @@
 // src/pages/Home.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useUI } from '../../contexts/UIContext'; // Changed to match HeroSection
+import { useUI } from '../contexts/UIContext'; // Reverted to original, correct path
 import HeroSection from '../components/sections/HeroSection';
 import ChecklistSection from '../components/sections/ChecklistSection';
 import ServicesSection from '../components/sections/ServicesSection';

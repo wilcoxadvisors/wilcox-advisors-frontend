@@ -1,6 +1,7 @@
 // src/pages/Home.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useUI } from '../contexts/UIContext'; // Import useUI
 
 // Import section components
 import HeroSection from '../components/sections/HeroSection';
@@ -32,7 +33,8 @@ function Home() {
   const [showChecklistForm, setShowChecklistForm] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [blogPosts, setBlogPosts] = useState([]);
-  
+  const { showConsultationForm } = useUI(); // Access UI context
+
   // Dashboard data (would ideally come from API or context)
   const dashboardData = {
     hero: { 
@@ -41,6 +43,11 @@ function Home() {
     },
     about: "At Wilcox Advisors, we specialize in financial solutions for small businesses. From startups to growing companies, we provide the expertise you need to succeed—built to scale with you every step of the way.",
   };
+
+  // Debug log to confirm consultation form state
+  useEffect(() => {
+    console.log('Home.jsx - showConsultationForm:', showConsultationForm);
+  }, [showConsultationForm]);
 
   // Fetch blog posts on component mount
   useEffect(() => {

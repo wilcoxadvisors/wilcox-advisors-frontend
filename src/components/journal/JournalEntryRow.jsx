@@ -6,9 +6,12 @@ export default function JournalEntryRow({
   entry,
   entryErrors,
   handleEntryChange,
+  handleAccountSelect,
   removeEntryRow,
   showDetailFields,
-  showAdvancedFields
+  showAdvancedFields,
+  accountsList,
+  getSubledgerBadge
 }) {
   return (
     <tr className="border-b">
@@ -21,13 +24,24 @@ export default function JournalEntryRow({
         />
       </td>
       <td className="py-2 px-3">
-        <input
-          type="text"
-          value={entry.accountNo}
-          onChange={(e) => handleEntryChange(entry.id, 'accountNo', e.target.value)}
-          placeholder="1000"
-          className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <div className="relative">
+          <input
+            type="text"
+            value={entry.accountNo}
+            onChange={(e) => handleEntryChange(entry.id, 'accountNo', e.target.value)}
+            placeholder="1000"
+            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            list={`accounts-${entry.id}`}
+          />
+          <datalist id={`accounts-${entry.id}`}>
+            {accountsList.map(account => (
+              <option key={account.accountNumber} value={account.accountNumber}>
+                {account.accountName}
+              </option>
+            ))}
+          </datalist>
+          {getSubledgerBadge(entry.accountNo)}
+        </div>
         {entryErrors?.accountNo && (
           <p className="text-red-500 text-sm">{entryErrors.accountNo}</p>
         )}

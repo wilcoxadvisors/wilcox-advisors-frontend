@@ -5,23 +5,42 @@ import { Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext'; 
 import { useUI } from '../contexts/UIContext';
 
-function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowConsultationForm }) {
-  // Get context values but fallback to props for safety
+function Header(props) {
+  const navigate = useNavigate();
+  
+  // Try to get values from context
   const authContext = useAuth();
   const uiContext = useUI();
   
+  // Debug logs
+  console.log("Auth Context:", authContext);
+  console.log("UI Context:", uiContext);
+  console.log("Props:", props);
+  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
-  // Use context values if available, otherwise fall back to props
-  const auth = {
-    isLoggedIn: authContext?.isLoggedIn !== undefined ? authContext.isLoggedIn : isLoggedIn,
-    isAdmin: authContext?.isAdmin !== undefined ? authContext.isAdmin : isAdmin,
-    logout: authContext?.logout || handleLogout
+  // Use context if available, otherwise use props
+  const isLoggedIn = authContext?.isLoggedIn !== undefined ? authContext.isLoggedIn : props.isLoggedIn;
+  const isAdmin = authContext?.isAdmin !== undefined ? authContext.isAdmin : props.isAdmin;
+  
+  const handleLogout = () => {
+    if (typeof authContext?.logout === 'function') {
+      authContext.logout();
+    } else if (typeof props.handleLogout === 'function') {
+      props.handleLogout();
+    }
+    navigate('/');
   };
   
-  const ui = {
-    setShowLogin: uiContext?.setShowLogin || setShowLogin,
-    setShowConsultationForm: uiContext?.setShowConsultationForm || setShowConsultationForm
+  const openLoginModal = () => {
+    console.log("Login button clicked");
+    if (typeof uiContext?.setShowLogin === 'function') {
+      uiContext.setShowLogin(true);
+    } else if (typeof props.setShowLogin === 'function') {
+      props.setShowLogin(true);
+    } else if (typeof props.setShowLoginModal === 'function') {
+      props.setShowLoginModal(true);
+    }
   };
 
   const handleSectionClick = (section) => {
@@ -71,17 +90,17 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowConsul
             >
               Contact
             </button>
-            {auth.isLoggedIn ? (
+            {isLoggedIn ? (
               <>
                 <Link 
-                  to={auth.isAdmin ? '/admin-dashboard' : '/client-dashboard'} 
+                  to={isAdmin ? '/admin-dashboard' : '/client-dashboard'} 
                   className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition duration-200" 
-                  aria-label={auth.isAdmin ? "Admin Dashboard" : "Client Dashboard"}
+                  aria-label={isAdmin ? "Admin Dashboard" : "Client Dashboard"}
                 >
                   Dashboard
                 </Link>
                 <button 
-                  onClick={auth.logout} 
+                  onClick={handleLogout} 
                   className="text-gray-700 hover:text-blue-800 font-medium" 
                   aria-label="Logout"
                 >
@@ -90,7 +109,7 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowConsul
               </>
             ) : (
               <button 
-                onClick={() => ui.setShowLogin(true)} 
+                onClick={openLoginModal} 
                 className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition duration-200" 
                 aria-label="Login"
               >
@@ -139,18 +158,18 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowConsul
               >
                 Contact
               </button>
-              {auth.isLoggedIn ? (
+              {isLoggedIn ? (
                 <>
                   <Link 
-                    to={auth.isAdmin ? '/admin-dashboard' : '/client-dashboard'} 
+                    to={isAdmin ? '/admin-dashboard' : '/client-dashboard'} 
                     className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left" 
                     onClick={() => setIsMobileMenuOpen(false)} 
-                    aria-label={auth.isAdmin ? "Admin Dashboard" : "Client Dashboard"}
+                    aria-label={isAdmin ? "Admin Dashboard" : "Client Dashboard"}
                   >
                     Dashboard
                   </Link>
                   <button 
-                    onClick={() => { auth.logout(); setIsMobileMenuOpen(false); }} 
+                    onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} 
                     className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800" 
                     aria-label="Logout"
                   >
@@ -159,7 +178,7 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowConsul
                 </>
               ) : (
                 <button 
-                  onClick={() => { ui.setShowLogin(true); setIsMobileMenuOpen(false); }} 
+                  onClick={() => { openLoginModal(); setIsMobileMenuOpen(false); }} 
                   className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left"
                   aria-label="Login"
                 >

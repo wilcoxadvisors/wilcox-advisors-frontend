@@ -1,14 +1,17 @@
-// src/components/Header.jsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { useUI } from '../contexts/UIContext';
 
-function Header() {
-  const { isLoggedIn, isAdmin, logout } = useAuth();
-  const { setShowLogin, setShowConsultationForm } = useUI();
+function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginModal }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const openLoginModal = () => {
+    if (typeof setShowLogin === 'function') {
+      setShowLogin(true);
+    } else if (typeof setShowLoginModal === 'function') {
+      setShowLoginModal(true);
+    }
+  };
 
   const handleSectionClick = (section) => {
     if (window.location.pathname === '/') {
@@ -67,7 +70,7 @@ function Header() {
                   Dashboard
                 </Link>
                 <button 
-                  onClick={logout} 
+                  onClick={handleLogout} 
                   className="text-gray-700 hover:text-blue-800 font-medium" 
                   aria-label="Logout"
                 >
@@ -76,7 +79,7 @@ function Header() {
               </>
             ) : (
               <button 
-                onClick={() => setShowLogin(true)} 
+                onClick={openLoginModal} 
                 className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition duration-200" 
                 aria-label="Login"
               >
@@ -136,7 +139,7 @@ function Header() {
                     Dashboard
                   </Link>
                   <button 
-                    onClick={() => { logout(); setIsMobileMenuOpen(false); }} 
+                    onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} 
                     className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800" 
                     aria-label="Logout"
                   >
@@ -145,7 +148,7 @@ function Header() {
                 </>
               ) : (
                 <button 
-                  onClick={() => { setShowLogin(true); setIsMobileMenuOpen(false); }} 
+                  onClick={() => { openLoginModal(); setIsMobileMenuOpen(false); }} 
                   className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left"
                   aria-label="Login"
                 >

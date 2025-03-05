@@ -10,7 +10,7 @@ import LoginModal from './components/LoginModal';
 import ConsultationFormModal from './components/ConsultationFormModal';
 import { AdminProtectedRoute, ClientProtectedRoute } from './components/ProtectedRoutes';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { UIProvider, useUI } from 'contexts/UIContext'; // Absolute import
+import { UIProvider, useUI } from './contexts/UIContext';
 
 export default function App() {
   return (
@@ -45,7 +45,7 @@ function AppContent() {
         setShowLoginModal={setShowLogin}
       />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home setShowConsultationForm={setShowConsultationForm} />} /> {/* Pass setter */}
         <Route path="/admin-dashboard" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
         <Route path="/client-dashboard" element={<ClientProtectedRoute><ClientDashboard /></ClientProtectedRoute>} />
       </Routes>

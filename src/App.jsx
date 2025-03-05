@@ -45,12 +45,12 @@ function AppContent() {
         setShowLoginModal={setShowLogin}
       />
       <Routes>
-        <Route path="/" element={<Home setShowConsultationForm={setShowConsultationForm} />} /> {/* Pass setter */}
+        <Route path="/" element={<Home setShowConsultationForm={setShowConsultationForm} />} />
         <Route path="/admin-dashboard" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
         <Route path="/client-dashboard" element={<ClientProtectedRoute><ClientDashboard /></ClientProtectedRoute>} />
       </Routes>
       {showLogin && <LoginModal setShowLoginModal={setShowLogin} setIsLoggedIn={setIsLoggedIn} setIsAdmin={setIsAdmin} />}
-      {showConsultationForm && <ConsultationFormModal />}
+      {showConsultationForm && <ConsultationFormModal setShowConsultationForm={setShowConsultationForm} />} {/* Pass setter */}
       <Footer />
     </div>
   );

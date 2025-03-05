@@ -1,16 +1,19 @@
+// src/components/Header.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { useUI } from '../contexts/UIContext';
 
-function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginModal }) {
+function Header() {
+  const navigate = useNavigate();
+  const { isLoggedIn, isAdmin, logout } = useAuth();
+  const { setShowLogin, setShowConsultationForm } = useUI();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  const openLoginModal = () => {
-    if (typeof setShowLogin === 'function') {
-      setShowLogin(true);
-    } else if (typeof setShowLoginModal === 'function') {
-      setShowLoginModal(true);
-    }
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   const handleSectionClick = (section) => {
@@ -79,7 +82,7 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginM
               </>
             ) : (
               <button 
-                onClick={openLoginModal} 
+                onClick={() => setShowLogin(true)} 
                 className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition duration-200" 
                 aria-label="Login"
               >
@@ -148,7 +151,7 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginM
                 </>
               ) : (
                 <button 
-                  onClick={() => { openLoginModal(); setIsMobileMenuOpen(false); }} 
+                  onClick={() => { setShowLogin(true); setIsMobileMenuOpen(false); }} 
                   className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left"
                   aria-label="Login"
                 >

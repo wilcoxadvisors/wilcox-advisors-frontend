@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
-function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginModal }) {
+function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginModal, setShowConsultationForm }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const openLoginModal = () => {
@@ -10,6 +10,12 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginM
       setShowLogin(true);
     } else if (typeof setShowLoginModal === 'function') {
       setShowLoginModal(true);
+    }
+  };
+
+  const openConsultationForm = () => {
+    if (typeof setShowConsultationForm === 'function') {
+      setShowConsultationForm(true);
     }
   };
 
@@ -78,13 +84,22 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginM
                 </button>
               </>
             ) : (
-              <button 
-                onClick={openLoginModal} 
-                className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition duration-200" 
-                aria-label="Login"
-              >
-                Login
-              </button>
+              <>
+                <button 
+                  onClick={openLoginModal} 
+                  className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition duration-200" 
+                  aria-label="Login"
+                >
+                  Login
+                </button>
+                <button 
+                  onClick={openConsultationForm} 
+                  className="px-4 py-2 border-2 border-blue-800 text-blue-800 rounded-md hover:bg-blue-50 transition duration-200" 
+                  aria-label="Schedule Consultation"
+                >
+                  Consult
+                </button>
+              </>
             )}
           </div>
           <div className="md:hidden">
@@ -147,13 +162,22 @@ function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginM
                   </button>
                 </>
               ) : (
-                <button 
-                  onClick={() => { openLoginModal(); setIsMobileMenuOpen(false); }} 
-                  className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left"
-                  aria-label="Login"
-                >
-                  Login
-                </button>
+                <>
+                  <button 
+                    onClick={() => { openLoginModal(); setIsMobileMenuOpen(false); }} 
+                    className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left"
+                    aria-label="Login"
+                  >
+                    Login
+                  </button>
+                  <button 
+                    onClick={() => { openConsultationForm(); setIsMobileMenuOpen(false); }} 
+                    className="block px-3 py-2 border-2 border-blue-800 text-blue-800 rounded-md hover:bg-blue-50 w-full text-left mt-2"
+                    aria-label="Schedule Consultation"
+                  >
+                    Schedule Consultation
+                  </button>
+                </>
               )}
             </div>
           </div>

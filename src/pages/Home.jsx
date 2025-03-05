@@ -1,7 +1,7 @@
 // src/pages/Home.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useUI } from 'contexts/UIContext'; // Absolute import
+import { useUI } from '../contexts/UIContext';
 import HeroSection from '../components/sections/HeroSection';
 import ChecklistSection from '../components/sections/ChecklistSection';
 import ServicesSection from '../components/sections/ServicesSection';
@@ -21,7 +21,7 @@ const servicesList = [
   { id: 'controllerCFO', title: 'Outsourced Controller/CFO Services', description: 'Strategic financial oversight and planning tailored to your business' },
 ];
 
-function Home() {
+function Home({ setShowConsultationForm }) { // Add prop
   const [showChecklistForm, setShowChecklistForm] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [blogPosts, setBlogPosts] = useState([]);
@@ -54,7 +54,7 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <HeroSection dashboardData={dashboardData} />
+      <HeroSection dashboardData={dashboardData} setShowConsultationForm={setShowConsultationForm} /> {/* Pass setter */}
       <ChecklistSection setShowChecklistForm={setShowChecklistForm} />
       <ServicesSection servicesList={servicesList} />
       <BlogSection blogPosts={blogPosts} />

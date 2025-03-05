@@ -7,12 +7,15 @@ export default function JournalEntriesTable({
   journalData,
   entryErrors,
   handleEntryChange,
+  handleAccountSelect,
   removeEntryRow,
   totals,
   errors,
   showDetailFields,
   setShowDetailFields,
-  showAdvancedFields
+  showAdvancedFields,
+  accountsList,
+  getSubledgerBadge
 }) {
   return (
     <>
@@ -61,9 +64,12 @@ export default function JournalEntriesTable({
                 entry={entry}
                 entryErrors={entryErrors[index]}
                 handleEntryChange={handleEntryChange}
+                handleAccountSelect={handleAccountSelect}
                 removeEntryRow={removeEntryRow}
                 showDetailFields={showDetailFields}
                 showAdvancedFields={showAdvancedFields}
+                accountsList={accountsList}
+                getSubledgerBadge={getSubledgerBadge}
               />
             ))}
             

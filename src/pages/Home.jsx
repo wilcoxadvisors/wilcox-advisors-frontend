@@ -21,7 +21,7 @@ const servicesList = [
   { id: 'controllerCFO', title: 'Outsourced Controller/CFO Services', description: 'Strategic financial oversight and planning tailored to your business' },
 ];
 
-function Home({ setShowConsultationForm }) { // Add prop
+function Home({ setShowConsultationForm }) {
   const [showChecklistForm, setShowChecklistForm] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [blogPosts, setBlogPosts] = useState([]);
@@ -54,7 +54,7 @@ function Home({ setShowConsultationForm }) { // Add prop
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <HeroSection dashboardData={dashboardData} setShowConsultationForm={setShowConsultationForm} /> {/* Pass setter */}
+      <HeroSection dashboardData={dashboardData} setShowConsultationForm={setShowConsultationForm} />
       <ChecklistSection setShowChecklistForm={setShowChecklistForm} />
       <ServicesSection servicesList={servicesList} />
       <BlogSection blogPosts={blogPosts} />

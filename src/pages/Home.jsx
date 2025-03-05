@@ -36,10 +36,6 @@ function Home({ setShowConsultationForm }) {
   };
 
   useEffect(() => {
-    console.log('Home.jsx - showConsultationForm:', showConsultationForm);
-  }, [showConsultationForm]);
-
-  useEffect(() => {
     fetchBlogPosts();
   }, []);
 

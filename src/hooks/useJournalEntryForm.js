@@ -1,5 +1,6 @@
 // src/hooks/useJournalEntryForm.js
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function useJournalEntryForm(onSuccess) {
   const [journalData, setJournalData] = useState({
@@ -42,6 +43,24 @@ export default function useJournalEntryForm(onSuccess) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [totals, setTotals] = useState({ debit: 0, credit: 0, isBalanced: false });
   const [supportingDocs, setSupportingDocs] = useState([]);
+  const [accountsList, setAccountsList] = useState([]);
+
+  // Fetch accounts when component mounts
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:10000'}/api/accounting/accounts`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setAccountsList(response.data.accounts);
+      } catch (error) {
+        console.error('Failed to fetch accounts:', error);
+      }
+    };
+    
+    fetchAccounts();
+  }, []);
 
   // Calculate totals when entries change
   useEffect(() => {
@@ -85,6 +104,21 @@ export default function useJournalEntryForm(onSuccess) {
       ...journalData,
       entries: updatedEntries
     });
+    
+    // Auto-fill account title if account number changes
+    if (field === 'accountNo') {
+      const selectedAccount = accountsList.find(a => a.accountNumber === value);
+      if (selectedAccount) {
+        handleEntryChange(id, 'accountTitle', selectedAccount.accountName);
+      }
+    }
+  };
+
+  const handleAccountSelect = (id, accountNo) => {
+    const selectedAccount = accountsList.find(a => a.accountNumber === accountNo);
+    if (selectedAccount) {
+      handleEntryChange(id, 'accountTitle', selectedAccount.accountName);
+    }
   };
 
   const addEntryRow = () => {
@@ -192,7 +226,7 @@ export default function useJournalEntryForm(onSuccess) {
     
     try {
       const token = localStorage.getItem('token');
-      await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {
+      await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:10000'}/api/upload`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -232,7 +266,7 @@ export default function useJournalEntryForm(onSuccess) {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/journal-entries`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:10000'}/api/accounting/journal-entry`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -301,8 +335,10 @@ export default function useJournalEntryForm(onSuccess) {
     isSubmitting,
     totals,
     supportingDocs,
+    accountsList,
     handleChange,
     handleEntryChange,
+    handleAccountSelect,
     addEntryRow,
     removeEntryRow,
     handleFileUpload,

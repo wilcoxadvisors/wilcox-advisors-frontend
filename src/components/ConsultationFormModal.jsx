@@ -1,3 +1,4 @@
+// src/components/ConsultationFormModal.jsx
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
@@ -41,8 +42,8 @@ const formSteps = [
   },
 ];
 
-function ConsultationFormModal() {
-  const { setShowConsultationForm } = useUI();
+function ConsultationFormModal({ setShowConsultationForm }) { // Add prop
+  const { setShowConsultationForm: setShowConsultationFormContext } = useUI(); // Keep context for debugging
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const initialFormData = {
@@ -55,9 +56,8 @@ function ConsultationFormModal() {
     try {
       await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:10000'}/api/consultation`, formData);
       alert('Thank you! Your request has been submitted. We\'ll contact you shortly!');
-      if (typeof setShowConsultationForm === 'function') {
-        setShowConsultationForm(false);
-      }
+      setShowConsultationForm(false); // Use prop to close modal
+      console.log('Modal closed after submit (prop)');
     } catch (error) {
       alert('Submission failed. Please try again.');
     } finally {
@@ -77,9 +77,8 @@ function ConsultationFormModal() {
   } = useMultiStepForm(formSteps, initialFormData, handleFormSubmit);
 
   const handleClose = () => {
-    if (typeof setShowConsultationForm === 'function') {
-      setShowConsultationForm(false);
-    }
+    setShowConsultationForm(false); // Use prop to close modal
+    console.log('Modal closed via X button (prop)');
   };
 
   return (

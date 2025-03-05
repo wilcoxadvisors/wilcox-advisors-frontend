@@ -57,7 +57,6 @@ function ConsultationFormModal({ setShowConsultationForm }) { // Add prop
       await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:10000'}/api/consultation`, formData);
       alert('Thank you! Your request has been submitted. We\'ll contact you shortly!');
       setShowConsultationForm(false); // Use prop to close modal
-      console.log('Modal closed after submit (prop)');
     } catch (error) {
       alert('Submission failed. Please try again.');
     } finally {
@@ -78,7 +77,6 @@ function ConsultationFormModal({ setShowConsultationForm }) { // Add prop
 
   const handleClose = () => {
     setShowConsultationForm(false); // Use prop to close modal
-    console.log('Modal closed via X button (prop)');
   };
 
   return (

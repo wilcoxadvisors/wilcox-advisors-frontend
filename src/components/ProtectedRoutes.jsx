@@ -1,18 +1,20 @@
+// src/components/ProtectedRoutes.jsx
 import { Navigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 function AdminProtectedRoute({ children }) {
-  const token = localStorage.getItem('token');
-  const isAdmin = localStorage.getItem('isAdmin') === 'true';
-  if (!token || !isAdmin) {
+  const { isLoggedIn, isAdmin } = useAuth();
+  
+  if (!isLoggedIn || !isAdmin) {
     return <Navigate to="/" />;
   }
   return children;
 }
 
 function ClientProtectedRoute({ children }) {
-  const token = localStorage.getItem('token');
-  const isAdmin = localStorage.getItem('isAdmin') === 'true';
-  if (!token || isAdmin) {
+  const { isLoggedIn, isAdmin } = useAuth();
+  
+  if (!isLoggedIn || isAdmin) {
     return <Navigate to="/" />;
   }
   return children;

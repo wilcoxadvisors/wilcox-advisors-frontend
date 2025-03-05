@@ -27,7 +27,7 @@ const servicesList = [
   { id: 'controllerCFO', title: 'Outsourced Controller/CFO Services', description: 'Strategic financial oversight and planning tailored to your business' },
 ];
 
-function Home({ setShowConsultationForm }) {
+function Home() {
   // State management
   const [showChecklistForm, setShowChecklistForm] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -49,7 +49,7 @@ function Home({ setShowConsultationForm }) {
 
   const fetchBlogPosts = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/blog`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:10000'}/api/blog`);
       setBlogPosts(response.data);
     } catch (error) {
       console.error('Failed to fetch blog posts:', error);
@@ -58,29 +58,20 @@ function Home({ setShowConsultationForm }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <HeroSection 
-        dashboardData={dashboardData} 
-        setShowConsultationForm={setShowConsultationForm} 
-      />
-      <ChecklistSection 
-        setShowChecklistForm={setShowChecklistForm} 
-      />
-      <ServicesSection 
-        servicesList={servicesList} 
-      />
-      <BlogSection 
-        blogPosts={blogPosts} 
-      />
+      <HeroSection dashboardData={dashboardData} />
+      <ChecklistSection setShowChecklistForm={setShowChecklistForm} />
+      <ServicesSection servicesList={servicesList} />
+      <BlogSection blogPosts={blogPosts} />
       <TestimonialsSection />
-      <AboutSection 
-        aboutText={dashboardData.about} 
-      />
+      <AboutSection aboutText={dashboardData.about} />
       <ContactSection />
 
-      <ChecklistModal 
-        isOpen={showChecklistForm}
-        onClose={() => setShowChecklistForm(false)}
-      />
+      {showChecklistForm && (
+        <ChecklistModal 
+          isOpen={showChecklistForm}
+          onClose={() => setShowChecklistForm(false)}
+        />
+      )}
 
       <ChatWidget 
         isOpen={isChatOpen}

@@ -10,7 +10,7 @@ import LoginModal from './components/LoginModal';
 import ConsultationFormModal from './components/ConsultationFormModal';
 import { AdminProtectedRoute, ClientProtectedRoute } from './components/ProtectedRoutes';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { UIProvider, useUI } from './contexts/UIContext';
+import { UIProvider, useUI } from './contexts/UIContext'; // Unchanged, already correct
 
 export default function App() {
   return (
@@ -27,9 +27,8 @@ function AppContent() {
   const { isLoggedIn, isAdmin, logout } = useAuth();
   const { showLogin, setShowLogin, showConsultationForm, setShowConsultationForm } = useUI();
 
-  // Debug log to confirm state change
   React.useEffect(() => {
-    console.log('showConsultationForm changed to:', showConsultationForm);
+    console.log('App.jsx - showConsultationForm changed to:', showConsultationForm);
   }, [showConsultationForm]);
 
   const handleLogout = () => {
@@ -45,30 +44,13 @@ function AppContent() {
         handleLogout={handleLogout}
         setShowLoginModal={setShowLogin}
       />
-
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route
-          path="/admin-dashboard"
-          element={
-            <AdminProtectedRoute>
-              <AdminDashboard />
-            </AdminProtectedRoute>
-          }
-        />
-        <Route
-          path="/client-dashboard"
-          element={
-            <ClientProtectedRoute>
-              <ClientDashboard />
-            </ClientProtectedRoute>
-          }
-        />
+        <Route path="/admin-dashboard" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
+        <Route path="/client-dashboard" element={<ClientProtectedRoute><ClientDashboard /></ClientProtectedRoute>} />
       </Routes>
-
       {showLogin && <LoginModal setShowLoginModal={setShowLogin} setIsLoggedIn={setIsLoggedIn} setIsAdmin={setIsAdmin} />}
       {showConsultationForm && <ConsultationFormModal />}
-
       <Footer />
     </div>
   );

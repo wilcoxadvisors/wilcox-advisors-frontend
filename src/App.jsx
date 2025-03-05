@@ -27,6 +27,11 @@ function AppContent() {
   const { isLoggedIn, isAdmin, logout } = useAuth();
   const { showLogin, setShowLogin, showConsultationForm, setShowConsultationForm } = useUI();
 
+  // Debug log to confirm state change
+  React.useEffect(() => {
+    console.log('showConsultationForm changed to:', showConsultationForm);
+  }, [showConsultationForm]);
+
   const handleLogout = () => {
     logout();
     navigate('/');

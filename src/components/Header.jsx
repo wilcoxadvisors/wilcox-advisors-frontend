@@ -1,45 +1,15 @@
-// src/components/Header.jsx
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext'; 
-import { useUI } from '../contexts/UIContext';
 
-function Header(props) {
-  const navigate = useNavigate();
-  
-  // Try to get values from context
-  const authContext = useAuth();
-  const uiContext = useUI();
-  
-  // Debug logs
-  console.log("Auth Context:", authContext);
-  console.log("UI Context:", uiContext);
-  console.log("Props:", props);
-  
+function Header({ isLoggedIn, isAdmin, handleLogout, setShowLogin, setShowLoginModal }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
-  // Use context if available, otherwise use props
-  const isLoggedIn = authContext?.isLoggedIn !== undefined ? authContext.isLoggedIn : props.isLoggedIn;
-  const isAdmin = authContext?.isAdmin !== undefined ? authContext.isAdmin : props.isAdmin;
-  
-  const handleLogout = () => {
-    if (typeof authContext?.logout === 'function') {
-      authContext.logout();
-    } else if (typeof props.handleLogout === 'function') {
-      props.handleLogout();
-    }
-    navigate('/');
-  };
-  
   const openLoginModal = () => {
-    console.log("Login button clicked");
-    if (typeof uiContext?.setShowLogin === 'function') {
-      uiContext.setShowLogin(true);
-    } else if (typeof props.setShowLogin === 'function') {
-      props.setShowLogin(true);
-    } else if (typeof props.setShowLoginModal === 'function') {
-      props.setShowLoginModal(true);
+    if (typeof setShowLogin === 'function') {
+      setShowLogin(true);
+    } else if (typeof setShowLoginModal === 'function') {
+      setShowLoginModal(true);
     }
   };
 

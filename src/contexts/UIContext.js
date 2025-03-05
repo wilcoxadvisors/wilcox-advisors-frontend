@@ -1,27 +1,41 @@
 import React, { createContext, useContext, useState } from 'react';
 
-const UIContext = createContext(null);
+// Create a context with a default value to help with TypeScript and provide better error handling
+const UIContext = createContext({
+  showLogin: false,
+  setShowLogin: () => {},
+  showConsultationForm: false,
+  setShowConsultationForm: () => {}
+});
 
+// Provider component to wrap the app and provide UI state
 export function UIProvider({ children }) {
   const [showLogin, setShowLogin] = useState(false);
   const [showConsultationForm, setShowConsultationForm] = useState(false);
 
+  // Value object to be passed to the context provider
+  const value = { 
+    showLogin, 
+    setShowLogin, 
+    showConsultationForm, 
+    setShowConsultationForm 
+  };
+
   return (
-    <UIContext.Provider value={{ 
-      showLogin, 
-      setShowLogin, 
-      showConsultationForm, 
-      setShowConsultationForm 
-    }}>
+    <UIContext.Provider value={value}>
       {children}
     </UIContext.Provider>
   );
 }
 
+// Custom hook to use the UI context
 export function useUI() {
   const context = useContext(UIContext);
-  if (context === null) {
+  
+  // Throw an error if the hook is used outside of a UIProvider
+  if (context === undefined) {
     throw new Error('useUI must be used within a UIProvider');
   }
+  
   return context;
 }

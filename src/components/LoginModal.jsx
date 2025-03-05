@@ -1,19 +1,16 @@
+// src/components/LoginModal.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { X } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { useUI } from '../contexts/UIContext';
 
-function LoginModal({ setShowLogin, setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
+function LoginModal() {
+  const { login } = useAuth();
+  const { setShowLogin } = useUI();
+  
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
-
-  // Function to close modal that works with either prop name
-  const closeModal = () => {
-    if (typeof setShowLogin === 'function') {
-      setShowLogin(false);
-    } else if (typeof setShowLoginModal === 'function') {
-      setShowLoginModal(false);
-    }
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,11 +25,9 @@ function LoginModal({ setShowLogin, setShowLoginModal, setIsLoggedIn, setIsAdmin
     }
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/login`, loginData);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('isAdmin', response.data.isAdmin);
-      setIsLoggedIn(true);
-      setIsAdmin(response.data.isAdmin);
-      closeModal();
+      // Use the login function from AuthContext instead of prop methods
+      login(response.data.token, response.data.isAdmin);
+      setShowLogin(false);
       setLoginData({ email: '', password: '' });
       setError('');
     } catch (error) {
@@ -45,7 +40,7 @@ function LoginModal({ setShowLogin, setShowLoginModal, setIsLoggedIn, setIsAdmin
       <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-blue-800">Client Login</h2>
-          <button onClick={closeModal} className="text-gray-500 hover:text-gray-700">
+          <button onClick={() => setShowLogin(false)} className="text-gray-500 hover:text-gray-700">
             <X size={24} />
           </button>
         </div>

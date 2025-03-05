@@ -7,6 +7,7 @@ import FormProgress from './form/FormProgress';
 import CompanyInformationStep from './form/CompanyInformationStep';
 import ServicesSelectionStep from './form/ServicesSelectionStep';
 import FormNavigation from './form/FormNavigation';
+import { useUI } from '../contexts/UIContext'; // Import the UI context hook
 
 const servicesList = [
   { id: 'bookkeeping', title: 'Bookkeeping', description: 'Full-service bookkeeping including transaction coding and reconciliations' },
@@ -41,7 +42,9 @@ const formSteps = [
   },
 ];
 
-function ConsultationFormModal({ setShowConsultationForm }) {
+function ConsultationFormModal() {
+  // Use the context instead of props
+  const { setShowConsultationForm } = useUI();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const initialFormData = {

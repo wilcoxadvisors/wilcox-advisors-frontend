@@ -11,6 +11,8 @@ import ConsultationFormModal from './components/ConsultationFormModal';
 import { AdminProtectedRoute, ClientProtectedRoute } from './components/ProtectedRoutes';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { UIProvider, useUI } from './contexts/UIContext';
+import LearnMore from './pages/LearnMore';
+import axios from 'axios';
 
 export default function App() {
   return (
@@ -27,9 +29,17 @@ function AppContent() {
   const { isLoggedIn, isAdmin, logout } = useAuth();
   const { showLogin, setShowLogin, showConsultationForm, setShowConsultationForm } = useUI();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      // No need to call the backend for logout in token-based auth
+      // Just clear the local storage
+      localStorage.removeItem('token');
+      localStorage.removeItem('isAdmin');
+      logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
@@ -42,11 +52,12 @@ function AppContent() {
       />
       <Routes>
         <Route path="/" element={<Home setShowConsultationForm={setShowConsultationForm} />} />
+        <Route path="/learn-more" element={<LearnMore />} />
         <Route path="/admin-dashboard" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
         <Route path="/client-dashboard" element={<ClientProtectedRoute><ClientDashboard /></ClientProtectedRoute>} />
       </Routes>
-      {showLogin && <LoginModal setShowLoginModal={setShowLogin} setIsLoggedIn={setIsLoggedIn} setIsAdmin={setIsAdmin} />}
-      {showConsultationForm && <ConsultationFormModal setShowConsultationForm={setShowConsultationForm} />} {/* Pass setter */}
+      {showLogin && <LoginModal setShowLoginModal={setShowLogin} setIsLoggedIn={() => {}} setIsAdmin={() => {}} />}
+      {showConsultationForm && <ConsultationFormModal setShowConsultationForm={setShowConsultationForm} />}
       <Footer />
     </div>
   );

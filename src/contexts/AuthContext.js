@@ -2,14 +2,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('token') !== null);
   const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin') === 'true');
   const [user, setUser] = useState(null);
 
-  // Setup axios defaults for authenticated requests
   useEffect(() => {
     if (isLoggedIn) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
@@ -35,23 +34,25 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const authContextValue = {
-    isLoggedIn,
-    isAdmin,
-    user,
-    login,
-    logout,
-    setIsLoggedIn,
-    setIsAdmin
-  };
-
   return (
-    <AuthContext.Provider value={authContextValue}>
+    <AuthContext.Provider value={{ 
+      isLoggedIn, 
+      isAdmin, 
+      user, 
+      login, 
+      logout, 
+      setIsLoggedIn, 
+      setIsAdmin 
+    }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

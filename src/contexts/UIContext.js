@@ -1,35 +1,28 @@
 // src/contexts/UIContext.js
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
-const UIContext = createContext({
-  showLogin: false,
-  setShowLogin: () => {},
-  showConsultationForm: false,
-  setShowConsultationForm: () => {}
-});
+const UIContext = createContext(null);
 
-export function UIProvider({ children }) {
+export const UIProvider = ({ children }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [showConsultationForm, setShowConsultationForm] = useState(false);
 
-  const value = { 
-    showLogin, 
-    setShowLogin, 
-    showConsultationForm, 
-    setShowConsultationForm 
-  };
-
   return (
-    <UIContext.Provider value={value}>
+    <UIContext.Provider value={{ 
+      showLogin, 
+      setShowLogin, 
+      showConsultationForm, 
+      setShowConsultationForm 
+    }}>
       {children}
     </UIContext.Provider>
   );
-}
+};
 
-export function useUI() {
+export const useUI = () => {
   const context = useContext(UIContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useUI must be used within a UIProvider');
   }
   return context;
-}
+};

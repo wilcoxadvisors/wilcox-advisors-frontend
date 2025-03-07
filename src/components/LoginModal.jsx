@@ -1,3 +1,4 @@
+// src/components/LoginModal.jsx
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
@@ -38,13 +39,25 @@ function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
       return;
     }
     
+    // Check if we have a CSRF token
+    if (!csrfToken) {
+      try {
+        // Try to get a new token if we don't have one
+        const token = await getCsrfToken();
+        setCsrfToken(token);
+      } catch (error) {
+        setError('Security token missing. Please refresh the page and try again.');
+        return;
+      }
+    }
+    
     setIsLoading(true);
     setError('');
     
     try {
       // Configure axios for this specific request
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/login`, 
+        `${process.env.REACT_APP_API_URL || 'https://wilcox-advisors-backend.onrender.com'}/api/login`, 
         loginData, 
         {
           headers: {
@@ -74,13 +87,20 @@ function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
             setError('Invalid email or password. Please try again.');
             break;
           case 403:
-            setError('CSRF validation failed. Please refresh the page.');
+            // On CSRF error, try to get a new token and ask the user to try again
+            try {
+              const newToken = await getCsrfToken();
+              setCsrfToken(newToken);
+              setError('Session expired. Please try logging in again.');
+            } catch (e) {
+              setError('Security validation failed. Please refresh the page.');
+            }
             break;
           case 500:
             setError('Server error. Please try again later.');
             break;
           default:
-            setError(error.response.data.message || 'Login failed. Please try again.');
+            setError(error.response.data?.message || 'Login failed. Please try again.');
         }
       } else if (error.request) {
         // The request was made but no response was received
@@ -139,7 +159,7 @@ function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
             <button 
               type="submit" 
               className="bg-blue-800 text-white px-6 py-2 rounded-lg hover:bg-blue-900 transition duration-200"
-              disabled={isLoading || !csrfToken}
+              disabled={isLoading}
             >
               {isLoading ? 'Logging in...' : 'Login'}
             </button>

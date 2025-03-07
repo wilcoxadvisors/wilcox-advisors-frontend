@@ -1,7 +1,7 @@
 // src/pages/Home.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { useUI } from '../contexts/UIContext';
+import { UIContext } from '../App';
 import HeroSection from '../components/sections/HeroSection';
 import ChecklistSection from '../components/sections/ChecklistSection';
 import ServicesSection from '../components/sections/ServicesSection';
@@ -25,7 +25,7 @@ function Home({ setShowConsultationForm }) {
   const [showChecklistForm, setShowChecklistForm] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [blogPosts, setBlogPosts] = useState([]);
-  const { showConsultationForm } = useUI();
+  const ui = useContext(UIContext);
 
   const dashboardData = {
     hero: { 
@@ -50,7 +50,10 @@ function Home({ setShowConsultationForm }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <HeroSection dashboardData={dashboardData} setShowConsultationForm={setShowConsultationForm} />
+      <HeroSection 
+        dashboardData={dashboardData} 
+        setShowConsultationForm={setShowConsultationForm} 
+      />
       <ChecklistSection setShowChecklistForm={setShowChecklistForm} />
       <ServicesSection servicesList={servicesList} />
       <BlogSection blogPosts={blogPosts} />

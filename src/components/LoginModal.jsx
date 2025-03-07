@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import api from '../utils/api';
-import { getCsrfToken, setCsrfToken } from '../utils/csrf';
+import axios from 'axios';
+import { getCsrfToken } from '../utils/csrf';
 
 function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [csrfToken, setCsrfToken] = useState('');
 
   useEffect(() => {
     // Fetch CSRF token when component mounts
-    const fetchCsrfToken = async () => {
+    const fetchToken = async () => {
       try {
         const token = await getCsrfToken();
         setCsrfToken(token);
       } catch (error) {
-        console.error('Error fetching CSRF token:', error);
+        console.error('CSRF Token Fetch Error:', error);
+        setError('Unable to initialize secure login. Please try again.');
       }
     };
     
-    fetchCsrfToken();
+    fetchToken();
   }, []);
 
   const handleInputChange = (e) => {
@@ -29,6 +31,8 @@ function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate inputs
     if (!loginData.email.trim() || !loginData.password.trim()) {
       setError('Please enter both email and password.');
       return;
@@ -38,36 +42,60 @@ function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
     setError('');
     
     try {
-      const response = await api.post('/login', loginData);
-      
-      // Update app state
-      if (typeof setIsLoggedIn === 'function') {
-        setIsLoggedIn(true);
-      }
-      
-      if (typeof setIsAdmin === 'function') {
-        setIsAdmin(response.data.isAdmin);
-      }
-      
-      // Close modal
-      if (typeof setShowLoginModal === 'function') {
-        setShowLoginModal(false);
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError(
-        error.response?.data?.message || 
-        'Login failed. Please check your credentials.'
+      // Configure axios for this specific request
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/login`, 
+        loginData, 
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+          },
+          withCredentials: true
+        }
       );
+      
+      // Store authentication data
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('isAdmin', response.data.isAdmin);
+      
+      // Update state
+      setIsLoggedIn(true);
+      setIsAdmin(response.data.isAdmin);
+      setShowLoginModal(false);
+    } catch (error) {
+      console.error('Login Error:', error);
+      
+      // Handle different error scenarios
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        switch (error.response.status) {
+          case 401:
+            setError('Invalid email or password. Please try again.');
+            break;
+          case 403:
+            setError('CSRF validation failed. Please refresh the page.');
+            break;
+          case 500:
+            setError('Server error. Please try again later.');
+            break;
+          default:
+            setError(error.response.data.message || 'Login failed. Please try again.');
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        setError('No response from server. Please check your internet connection.');
+      } else {
+        // Something happened in setting up the request
+        setError('An unexpected error occurred. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   const closeModal = () => {
-    if (typeof setShowLoginModal === 'function') {
-      setShowLoginModal(false);
-    }
+    setShowLoginModal(false);
   };
 
   return (
@@ -111,7 +139,7 @@ function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
             <button 
               type="submit" 
               className="bg-blue-800 text-white px-6 py-2 rounded-lg hover:bg-blue-900 transition duration-200"
-              disabled={isLoading}
+              disabled={isLoading || !csrfToken}
             >
               {isLoading ? 'Logging in...' : 'Login'}
             </button>

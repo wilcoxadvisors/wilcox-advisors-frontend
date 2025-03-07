@@ -1,39 +1,13 @@
+// src/components/Header.jsx
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import axios from 'axios';
 
-function Header({ isLoggedIn, isAdmin, handleLogout: propHandleLogout, setShowLoginModal }) {
+function Header({ isLoggedIn, isAdmin, handleLogout, setShowLoginModal }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navigate = useNavigate();
   
   const handleLoginClick = () => {
-    if (typeof setShowLoginModal === 'function') {
-      setShowLoginModal(true);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await axios.post(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:10000'}/api/logout`,
-        {},
-        { withCredentials: true }
-      );
-      
-      // Call the parent handler if provided
-      if (typeof propHandleLogout === 'function') {
-        propHandleLogout();
-      }
-      
-      // Close mobile menu if open
-      setIsMobileMenuOpen(false);
-      
-      // Redirect to home page if needed
-      navigate('/');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+    setShowLoginModal(true);
   };
 
   const handleSectionClick = (section) => {

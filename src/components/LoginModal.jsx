@@ -1,9 +1,11 @@
 // src/components/LoginModal.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 
-function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
+function LoginModal({ setShowLoginModal }) {
+  const { login } = useAuth();
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -32,13 +34,8 @@ function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
         loginData
       );
       
-      // Store authentication data
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('isAdmin', response.data.isAdmin);
-      
-      // Update state
-      setIsLoggedIn(true);
-      setIsAdmin(response.data.isAdmin);
+      // Use the login function from AuthContext
+      login(response.data.token, response.data.isAdmin);
       setShowLoginModal(false);
     } catch (error) {
       console.error('Login Error:', error);

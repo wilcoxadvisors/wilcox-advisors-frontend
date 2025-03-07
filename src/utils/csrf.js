@@ -1,41 +1,32 @@
-import api from './api';
+import axios from 'axios';
 
-/**
- * Fetches a CSRF token from the server
- * @returns {Promise<string>} The CSRF token
- */
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:10000';
+
 export const getCsrfToken = async () => {
   try {
-    const response = await api.get('/csrf-token');
+    const fullUrl = `${API_URL}/api/csrf-token`;
+    console.log('Fetching CSRF Token from:', fullUrl);
+    
+    const response = await axios.get(fullUrl, {
+      withCredentials: true
+    });
+    
+    console.log('CSRF Token response:', response.data);
     return response.data.csrfToken;
   } catch (error) {
-    console.error('Failed to get CSRF token:', error);
+    console.error('CSRF Token Fetch Error:', {
+      message: error.message,
+      response: error.response,
+      request: error.request
+    });
     throw error;
   }
 };
 
-/**
- * Sets the CSRF token in localStorage
- * @param {string} token The CSRF token to store
- */
 export const setCsrfToken = (token) => {
   localStorage.setItem('csrfToken', token);
 };
 
-/**
- * Gets the CSRF token from localStorage
- * @returns {string|null} The CSRF token or null if not found
- */
 export const getStoredCsrfToken = () => {
   return localStorage.getItem('csrfToken');
-};
-
-/**
- * Refreshes the CSRF token
- * @returns {Promise<string>} The new CSRF token
- */
-export const refreshCsrfToken = async () => {
-  const token = await getCsrfToken();
-  setCsrfToken(token);
-  return token;
 };

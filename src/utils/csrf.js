@@ -1,24 +1,15 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:10000';
+const API_URL = process.env.REACT_APP_API_URL || 'https://wilcox-advisors-backend.onrender.com';
 
 export const getCsrfToken = async () => {
   try {
-    const fullUrl = `${API_URL}/api/csrf-token`;
-    console.log('Fetching CSRF Token from:', fullUrl);
-    
-    const response = await axios.get(fullUrl, {
+    const response = await axios.get(`${API_URL}/api/csrf-token`, {
       withCredentials: true
     });
-    
-    console.log('CSRF Token response:', response.data);
     return response.data.csrfToken;
   } catch (error) {
-    console.error('CSRF Token Fetch Error:', {
-      message: error.message,
-      response: error.response,
-      request: error.request
-    });
+    console.error('CSRF Token Fetch Error:', error);
     throw error;
   }
 };

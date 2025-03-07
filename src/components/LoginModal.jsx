@@ -2,28 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
-import { getCsrfToken } from '../utils/csrf';
 
 function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [csrfToken, setCsrfToken] = useState('');
-
-  useEffect(() => {
-    // Fetch CSRF token when component mounts
-    const fetchToken = async () => {
-      try {
-        const token = await getCsrfToken();
-        setCsrfToken(token);
-      } catch (error) {
-        console.error('CSRF Token Fetch Error:', error);
-        setError('Unable to initialize secure login. Please try again.');
-      }
-    };
-    
-    fetchToken();
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -39,33 +22,14 @@ function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
       return;
     }
     
-    // Check if we have a CSRF token
-    if (!csrfToken) {
-      try {
-        // Try to get a new token if we don't have one
-        const token = await getCsrfToken();
-        setCsrfToken(token);
-      } catch (error) {
-        setError('Security token missing. Please refresh the page and try again.');
-        return;
-      }
-    }
-    
     setIsLoading(true);
     setError('');
     
     try {
-      // Configure axios for this specific request
+      // Use direct AJAX request instead of relying on CSRF tokens
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL || 'https://wilcox-advisors-backend.onrender.com'}/api/login`, 
-        loginData, 
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
-          },
-          withCredentials: true
-        }
+        `${process.env.REACT_APP_API_URL || 'https://wilcox-advisors-backend.onrender.com'}/api/auth/login`, 
+        loginData
       );
       
       // Store authentication data
@@ -87,14 +51,7 @@ function LoginModal({ setShowLoginModal, setIsLoggedIn, setIsAdmin }) {
             setError('Invalid email or password. Please try again.');
             break;
           case 403:
-            // On CSRF error, try to get a new token and ask the user to try again
-            try {
-              const newToken = await getCsrfToken();
-              setCsrfToken(newToken);
-              setError('Session expired. Please try logging in again.');
-            } catch (e) {
-              setError('Security validation failed. Please refresh the page.');
-            }
+            setError('Access forbidden. Please contact administrator.');
             break;
           case 500:
             setError('Server error. Please try again later.');

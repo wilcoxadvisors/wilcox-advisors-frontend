@@ -1,8 +1,9 @@
 // src/components/ProtectedRoutes.jsx
+import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-function AdminProtectedRoute({ children }) {
+export function AdminProtectedRoute({ children }) {
   const { isLoggedIn, isAdmin } = useAuth();
   
   if (!isLoggedIn || !isAdmin) {
@@ -11,13 +12,11 @@ function AdminProtectedRoute({ children }) {
   return children;
 }
 
-function ClientProtectedRoute({ children }) {
+export function ClientProtectedRoute({ children }) {
   const { isLoggedIn, isAdmin } = useAuth();
   
-  if (!isLoggedIn || isAdmin) {
+  if (!isLoggedIn) {
     return <Navigate to="/" />;
   }
   return children;
 }
-
-export { AdminProtectedRoute, ClientProtectedRoute };

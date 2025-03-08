@@ -10,59 +10,46 @@ import ClientDashboard from './components/ClientDashboard';
 import LoginModal from './components/LoginModal';
 import ConsultationFormModal from './components/ConsultationFormModal';
 import { AdminProtectedRoute, ClientProtectedRoute } from './components/ProtectedRoutes';
-
-// Create UI context directly in App
-export const UIContext = React.createContext(null);
+import { AuthProvider } from './contexts/AuthContext';
+import { UIProvider } from './contexts/UIContext';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('token') !== null);
-  const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin') === 'true');
   const [showLogin, setShowLogin] = useState(false);
   const [showConsultationForm, setShowConsultationForm] = useState(false);
-  
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('isAdmin');
-    setIsLoggedIn(false);
-    setIsAdmin(false);
-  };
 
   return (
-    <UIContext.Provider value={{ showLogin, setShowLogin, showConsultationForm, setShowConsultationForm }}>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <Header
-            isLoggedIn={isLoggedIn}
-            isAdmin={isAdmin}
-            handleLogout={handleLogout}
-            setShowLoginModal={setShowLogin}
-          />
-          <Routes>
-            <Route path="/" element={<Home setShowConsultationForm={setShowConsultationForm} />} />
-            <Route path="/learn-more" element={<LearnMore />} />
-            <Route path="/admin-dashboard" element={
-              <AdminProtectedRoute isLoggedIn={isLoggedIn} isAdmin={isAdmin}>
-                <AdminDashboard />
-              </AdminProtectedRoute>
-            } />
-            <Route path="/client-dashboard" element={
-              <ClientProtectedRoute isLoggedIn={isLoggedIn} isAdmin={isAdmin}>
-                <ClientDashboard />
-              </ClientProtectedRoute>
-            } />
-          </Routes>
-          <Footer />
-          {showLogin && 
-            <LoginModal 
-              setShowLoginModal={setShowLogin} 
-              setIsLoggedIn={setIsLoggedIn}
-              setIsAdmin={setIsAdmin}
+    <AuthProvider>
+      <UIProvider>
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            <Header
+              setShowLoginModal={setShowLogin}
             />
-          }
-          {showConsultationForm && <ConsultationFormModal setShowConsultationForm={setShowConsultationForm} />}
-        </div>
-      </Router>
-    </UIContext.Provider>
+            <Routes>
+              <Route path="/" element={<Home setShowConsultationForm={setShowConsultationForm} />} />
+              <Route path="/learn-more" element={<LearnMore />} />
+              <Route path="/admin-dashboard" element={
+                <AdminProtectedRoute>
+                  <AdminDashboard />
+                </AdminProtectedRoute>
+              } />
+              <Route path="/client-dashboard" element={
+                <ClientProtectedRoute>
+                  <ClientDashboard />
+                </ClientProtectedRoute>
+              } />
+            </Routes>
+            <Footer />
+            {showLogin && 
+              <LoginModal 
+                setShowLoginModal={setShowLogin} 
+              />
+            }
+            {showConsultationForm && <ConsultationFormModal setShowConsultationForm={setShowConsultationForm} />}
+          </div>
+        </Router>
+      </UIProvider>
+    </AuthProvider>
   );
 }
 

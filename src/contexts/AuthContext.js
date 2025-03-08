@@ -2,13 +2,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Create the context
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
+// Provider component
+export function AuthProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('token') !== null);
   const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin') === 'true');
   const [user, setUser] = useState(null);
 
+  // Update axios headers when login state changes
   useEffect(() => {
     if (isLoggedIn) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
@@ -17,6 +20,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [isLoggedIn]);
 
+  // Login function
   const login = (token, admin) => {
     localStorage.setItem('token', token);
     localStorage.setItem('isAdmin', admin);
@@ -25,6 +29,7 @@ export const AuthProvider = ({ children }) => {
     setIsAdmin(admin);
   };
 
+  // Logout function
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('isAdmin');
@@ -34,25 +39,25 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  return (
-    <AuthContext.Provider value={{ 
-      isLoggedIn, 
-      isAdmin, 
-      user, 
-      login, 
-      logout, 
-      setIsLoggedIn, 
-      setIsAdmin 
-    }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  // Value object to be provided to consumers
+  const value = {
+    isLoggedIn,
+    isAdmin,
+    user,
+    login,
+    logout,
+    setIsLoggedIn,
+    setIsAdmin
+  };
 
-export const useAuth = () => {
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+// Custom hook to use the auth context
+export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
+}

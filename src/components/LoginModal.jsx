@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function LoginModal({ setShowLoginModal }) {
   const auth = useAuth();
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +20,6 @@ function LoginModal({ setShowLoginModal }) {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate inputs
     if (!loginData.email.trim() || !loginData.password.trim()) {
       setError('Please enter both email and password.');
       return;
@@ -30,18 +31,31 @@ function LoginModal({ setShowLoginModal }) {
     try {
       const API_URL = process.env.REACT_APP_API_URL || 'https://wilcox-advisors-backend.onrender.com';
       
+      console.log("Attempting login with:", loginData.email);
       const response = await axios.post(
         `${API_URL}/api/auth/login`, 
         loginData
       );
       
-      // Use auth context to login
+      console.log("Login response:", response.data);
+      
+      // Store authentication state
       auth.login(response.data.token, response.data.isAdmin);
       setShowLoginModal(false);
+      
+      // Force navigation after a short delay
+      setTimeout(() => {
+        if (response.data.isAdmin) {
+          console.log("Redirecting to admin dashboard");
+          window.location.href = '/admin-dashboard';
+        } else {
+          console.log("Redirecting to client dashboard");
+          window.location.href = '/client-dashboard';
+        }
+      }, 100);
     } catch (error) {
       console.error('Login Error:', error);
       
-      // Handle different error scenarios
       if (error.response) {
         switch (error.response.status) {
           case 401:

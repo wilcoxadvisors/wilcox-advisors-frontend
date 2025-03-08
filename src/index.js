@@ -6,6 +6,7 @@ import Footer from './components/Footer'; // Footer component
 import ConsultationFormModal from './components/ConsultationFormModal'; // Consultation form modal component
 import LoginModal from './components/LoginModal'; // Login modal component
 import { UIProvider } from './contexts/UIContext'; // Import UIProvider
+import { AuthProvider } from './contexts/AuthContext'; // Import AuthProvider
 import './index.css'; // Global styles (assumed to exist)
 
 // Lazy load components
@@ -87,9 +88,11 @@ function App() {
 
 ReactDOM.render(
   <React.StrictMode>
-    <UIProvider>
-      <App />
-    </UIProvider>
+    <AuthProvider>
+      <UIProvider>
+        <App />
+      </UIProvider>
+    </AuthProvider>
   </React.StrictMode>,
   document.getElementById('root') // Renders the app into the DOM element with id="root" in index.html
 );

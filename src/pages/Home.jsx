@@ -1,7 +1,7 @@
 // src/pages/Home.jsx
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { UIContext } from '../App';
+import { useUI } from '../contexts/UIContext';
 import HeroSection from '../components/sections/HeroSection';
 import ChecklistSection from '../components/sections/ChecklistSection';
 import ServicesSection from '../components/sections/ServicesSection';
@@ -21,11 +21,24 @@ const servicesList = [
   { id: 'controllerCFO', title: 'Outsourced Controller/CFO Services', description: 'Strategic financial oversight and planning tailored to your business' },
 ];
 
+// Sample blog posts for fallback when API is unavailable
+const fallbackBlogPosts = [
+  {
+    _id: '1',
+    title: 'Essential Financial Best Practices for Small Businesses',
+    content: '<p>Managing finances effectively is crucial for small business success. This post covers the fundamental practices every business owner should implement.</p>'
+  },
+  {
+    _id: '2',
+    title: 'Understanding Cash Flow Forecasting',
+    content: '<p>Learn how to predict your business\'s financial future and make informed decisions with effective cash flow forecasting techniques.</p>'
+  }
+];
+
 function Home({ setShowConsultationForm }) {
   const [showChecklistForm, setShowChecklistForm] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [blogPosts, setBlogPosts] = useState([]);
-  const ui = useContext(UIContext);
+  const [blogPosts, setBlogPosts] = useState(fallbackBlogPosts);
+  const { isChatOpen, setIsChatOpen } = useUI();
 
   const dashboardData = {
     hero: { 
@@ -41,10 +54,20 @@ function Home({ setShowConsultationForm }) {
 
   const fetchBlogPosts = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:10000'}/api/blog`);
-      setBlogPosts(response.data);
+      // Define your API URL - use environment variable if available
+      const API_URL = process.env.REACT_APP_API_URL || 'https://wilcox-advisors-backend.onrender.com';
+      
+      const response = await axios.get(`${API_URL}/api/blog`);
+      
+      // Only update state if the response contains data
+      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+        setBlogPosts(response.data);
+      } else {
+        console.log('Blog API returned empty data, using fallback content');
+      }
     } catch (error) {
       console.error('Failed to fetch blog posts:', error);
+      // Keep using fallback blog posts on error - no need to update state
     }
   };
 

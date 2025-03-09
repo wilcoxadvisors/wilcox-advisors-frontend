@@ -1,13 +1,23 @@
 // src/components/Header.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { useUI } from '../contexts/UIContext';
 
-function Header({ isLoggedIn, isAdmin, handleLogout, setShowLoginModal }) {
+function Header() {
+  const { isLoggedIn, isAdmin, logout } = useAuth();
+  const { setShowLoginModal } = useUI();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const handleLoginClick = () => {
     setShowLoginModal(true);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   const handleSectionClick = (section) => {

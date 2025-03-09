@@ -43,14 +43,14 @@ function LoginModal({ setShowLoginModal }) {
       auth.login(response.data.token, response.data.isAdmin);
       setShowLoginModal(false);
       
-      // Force navigation after a short delay
+      // Use React Router's navigate instead of window.location.href
       setTimeout(() => {
         if (response.data.isAdmin) {
           console.log("Redirecting to admin dashboard");
-          window.location.href = '/admin-dashboard';
+          navigate('/admin-dashboard');
         } else {
           console.log("Redirecting to client dashboard");
-          window.location.href = '/client-dashboard';
+          navigate('/client-dashboard');
         }
       }, 100);
     } catch (error) {

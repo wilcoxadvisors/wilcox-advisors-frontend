@@ -3,11 +3,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useUI } from '../contexts/UIContext';
 
-function Header() {
+function Header({ setShowLoginModal }) {
   const { isLoggedIn, isAdmin, logout } = useAuth();
-  const { setShowLoginModal } = useUI();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
@@ -17,7 +15,7 @@ function Header() {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate('/'); // Add navigation to redirect after logout
   };
 
   const handleSectionClick = (section) => {

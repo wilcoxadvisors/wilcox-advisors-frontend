@@ -3,157 +3,168 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useUI } from '../contexts/UIContext';
 
-function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+function Header({ setShowLoginModal }) {
   const { isLoggedIn, isAdmin, logout } = useAuth();
-  const { setShowLoginModal, setShowConsultationForm } = useUI();
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const handleLoginClick = () => {
+    setShowLoginModal(true);
+  };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/');
-    } catch (error) {
-      console.error('Logout failed:', error);
+  const handleLogout = () => {
+    logout();
+    navigate('/'); // Add navigation to redirect after logout
+  };
+
+  const handleSectionClick = (section) => {
+    if (window.location.pathname === '/') {
+      document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.location.href = `/#${section}`;
     }
+    setIsMobileMenuOpen(false);
   };
 
   return (
-    <header className="bg-white shadow">
-      <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo */}
-        <Link to="/" className="text-blue-800 font-bold text-2xl">
-          Wilcox Advisors
-        </Link>
-
-        {/* Mobile Menu Button */}
-        <button 
-          className="md:hidden text-gray-700"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/" className="text-gray-700 hover:text-blue-800">
-            Home
-          </Link>
-          <Link to="/learn-more" className="text-gray-700 hover:text-blue-800">
-            Learn More
-          </Link>
-          {isLoggedIn ? (
-            <>
-              {isAdmin ? (
-                <Link to="/admin-dashboard" className="text-gray-700 hover:text-blue-800">
-                  Admin Dashboard
-                </Link>
-              ) : (
-                <Link to="/client-dashboard" className="text-gray-700 hover:text-blue-800">
+    <nav className="bg-white shadow-md sticky top-0 z-50" role="navigation" aria-label="Main navigation">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center">
+            <Link to="/" className="text-2xl text-blue-800 font-bold hover:text-blue-900 transition duration-200" aria-label="Home">
+              WILCOX ADVISORS
+            </Link>
+          </div>
+          <div className="hidden md:flex items-center space-x-8">
+            <button 
+              onClick={() => handleSectionClick('services')} 
+              className="text-gray-700 hover:text-blue-800 font-medium" 
+              aria-label="Services section"
+            >
+              Services
+            </button>
+            <button 
+              onClick={() => handleSectionClick('blog')} 
+              className="text-gray-700 hover:text-blue-800 font-medium" 
+              aria-label="Blog section"
+            >
+              Blog
+            </button>
+            <button 
+              onClick={() => handleSectionClick('about')} 
+              className="text-gray-700 hover:text-blue-800 font-medium" 
+              aria-label="About section"
+            >
+              About
+            </button>
+            <button 
+              onClick={() => handleSectionClick('contact')} 
+              className="text-gray-700 hover:text-blue-800 font-medium" 
+              aria-label="Contact section"
+            >
+              Contact
+            </button>
+            {isLoggedIn ? (
+              <>
+                <Link 
+                  to={isAdmin ? '/admin-dashboard' : '/client-dashboard'} 
+                  className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition duration-200" 
+                  aria-label={isAdmin ? "Admin Dashboard" : "Client Dashboard"}
+                >
                   Dashboard
                 </Link>
-              )}
+                <button 
+                  onClick={handleLogout} 
+                  className="text-gray-700 hover:text-blue-800 font-medium" 
+                  aria-label="Logout"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
               <button 
-                onClick={handleLogout}
-                className="text-gray-700 hover:text-blue-800"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <button 
-                onClick={() => setShowLoginModal(true)}
-                className="text-gray-700 hover:text-blue-800"
+                onClick={handleLoginClick} 
+                className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition duration-200" 
+                aria-label="Login"
               >
                 Login
               </button>
-              <button
-                onClick={() => setShowConsultationForm(true)}
-                className="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 transition duration-200"
+            )}
+          </div>
+          <div className="md:hidden">
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+              className="text-gray-700 hover:text-blue-800" 
+              aria-label="Toggle mobile menu"
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+        {isMobileMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-white" role="menu">
+              <button 
+                onClick={() => handleSectionClick('services')} 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-800 w-full text-left" 
+                aria-label="Services section"
               >
-                Free Consultation
+                Services
               </button>
-            </>
-          )}
-        </nav>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 right-0 bg-white shadow-md z-40">
-            <div className="flex flex-col p-4">
-              <Link 
-                to="/" 
-                className="py-2 text-gray-700 hover:text-blue-800"
-                onClick={() => setIsMenuOpen(false)}
+              <button 
+                onClick={() => handleSectionClick('blog')} 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-800 w-full text-left" 
+                aria-label="Blog section"
               >
-                Home
-              </Link>
-              <Link 
-                to="/learn-more" 
-                className="py-2 text-gray-700 hover:text-blue-800"
-                onClick={() => setIsMenuOpen(false)}
+                Blog
+              </button>
+              <button 
+                onClick={() => handleSectionClick('about')} 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-800 w-full text-left" 
+                aria-label="About section"
               >
-                Learn More
-              </Link>
+                About
+              </button>
+              <button 
+                onClick={() => handleSectionClick('contact')} 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-800 w-full text-left" 
+                aria-label="Contact section"
+              >
+                Contact
+              </button>
               {isLoggedIn ? (
                 <>
-                  {isAdmin ? (
-                    <Link 
-                      to="/admin-dashboard" 
-                      className="py-2 text-gray-700 hover:text-blue-800"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Admin Dashboard
-                    </Link>
-                  ) : (
-                    <Link 
-                      to="/client-dashboard" 
-                      className="py-2 text-gray-700 hover:text-blue-800"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Dashboard
-                    </Link>
-                  )}
+                  <Link 
+                    to={isAdmin ? '/admin-dashboard' : '/client-dashboard'} 
+                    className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left" 
+                    onClick={() => setIsMobileMenuOpen(false)} 
+                    aria-label={isAdmin ? "Admin Dashboard" : "Client Dashboard"}
+                  >
+                    Dashboard
+                  </Link>
                   <button 
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="py-2 text-left text-gray-700 hover:text-blue-800"
+                    onClick={handleLogout} 
+                    className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800" 
+                    aria-label="Logout"
                   >
                     Logout
                   </button>
                 </>
               ) : (
-                <>
-                  <button 
-                    onClick={() => {
-                      setShowLoginModal(true);
-                      setIsMenuOpen(false);
-                    }}
-                    className="py-2 text-left text-gray-700 hover:text-blue-800"
-                  >
-                    Login
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowConsultationForm(true);
-                      setIsMenuOpen(false);
-                    }}
-                    className="mt-2 bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 transition duration-200"
-                  >
-                    Free Consultation
-                  </button>
-                </>
+                <button 
+                  onClick={() => { handleLoginClick(); setIsMobileMenuOpen(false); }} 
+                  className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left"
+                  aria-label="Login"
+                >
+                  Login
+                </button>
               )}
             </div>
           </div>
         )}
       </div>
-    </header>
+    </nav>
   );
 }
 

@@ -1,171 +1,91 @@
-// src/components/Header.jsx
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Home, Users, Database, FileSpreadsheet, Settings, Globe, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
-function Header({ setShowLoginModal }) {
-  const { isLoggedIn, isAdmin, logout } = useAuth();
+export default function Sidebar({ activeModule, setActiveModule }) {
+  const { logout } = useAuth();
   const navigate = useNavigate();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  const handleLoginClick = () => {
-    setShowLoginModal(true);
-  };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/'); // Add navigation to redirect after logout
-  };
-
-  const handleSectionClick = (section) => {
-    if (window.location.pathname === '/') {
-      document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      window.location.href = `/#${section}`;
+  const handleLogout = async () => {
+    console.log("Sidebar: Logout initiated");
+    try {
+      await logout(); // Call the logout function from AuthContext
+      console.log("Sidebar: Logout completed, navigating to home");
+      navigate('/', { replace: true }); // Replace history to prevent back navigation
+    } catch (error) {
+      console.error("Sidebar: Logout failed", error);
+      // Fallback to hard redirect if something goes wrong
+      window.location.replace('/');
     }
-    setIsMobileMenuOpen(false);
   };
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50" role="navigation" aria-label="Main navigation">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
-            <Link to="/" className="text-2xl text-blue-800 font-bold hover:text-blue-900 transition duration-200" aria-label="Home">
-              WILCOX ADVISORS
-            </Link>
-          </div>
-          <div className="hidden md:flex items-center space-x-8">
-            <button 
-              onClick={() => handleSectionClick('services')} 
-              className="text-gray-700 hover:text-blue-800 font-medium" 
-              aria-label="Services section"
-            >
-              Services
-            </button>
-            <button 
-              onClick={() => handleSectionClick('blog')} 
-              className="text-gray-700 hover:text-blue-800 font-medium" 
-              aria-label="Blog section"
-            >
-              Blog
-            </button>
-            <button 
-              onClick={() => handleSectionClick('about')} 
-              className="text-gray-700 hover:text-blue-800 font-medium" 
-              aria-label="About section"
-            >
-              About
-            </button>
-            <button 
-              onClick={() => handleSectionClick('contact')} 
-              className="text-gray-700 hover:text-blue-800 font-medium" 
-              aria-label="Contact section"
-            >
-              Contact
-            </button>
-            {isLoggedIn ? (
-              <>
-                <Link 
-                  to={isAdmin ? '/admin-dashboard' : '/client-dashboard'} 
-                  className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition duration-200" 
-                  aria-label={isAdmin ? "Admin Dashboard" : "Client Dashboard"}
-                >
-                  Dashboard
-                </Link>
-                <button 
-                  onClick={handleLogout} 
-                  className="text-gray-700 hover:text-blue-800 font-medium" 
-                  aria-label="Logout"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <button 
-                onClick={handleLoginClick} 
-                className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition duration-200" 
-                aria-label="Login"
-              >
-                Login
-              </button>
-            )}
-          </div>
-          <div className="md:hidden">
-            <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-              className="text-gray-700 hover:text-blue-800" 
-              aria-label="Toggle mobile menu"
-            >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-        {isMobileMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white" role="menu">
-              <button 
-                onClick={() => handleSectionClick('services')} 
-                className="block px-3 py-2 text-gray-700 hover:text-blue-800 w-full text-left" 
-                aria-label="Services section"
-              >
-                Services
-              </button>
-              <button 
-                onClick={() => handleSectionClick('blog')} 
-                className="block px-3 py-2 text-gray-700 hover:text-blue-800 w-full text-left" 
-                aria-label="Blog section"
-              >
-                Blog
-              </button>
-              <button 
-                onClick={() => handleSectionClick('about')} 
-                className="block px-3 py-2 text-gray-700 hover:text-blue-800 w-full text-left" 
-                aria-label="About section"
-              >
-                About
-              </button>
-              <button 
-                onClick={() => handleSectionClick('contact')} 
-                className="block px-3 py-2 text-gray-700 hover:text-blue-800 w-full text-left" 
-                aria-label="Contact section"
-              >
-                Contact
-              </button>
-              {isLoggedIn ? (
-                <>
-                  <Link 
-                    to={isAdmin ? '/admin-dashboard' : '/client-dashboard'} 
-                    className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left" 
-                    onClick={() => setIsMobileMenuOpen(false)} 
-                    aria-label={isAdmin ? "Admin Dashboard" : "Client Dashboard"}
-                  >
-                    Dashboard
-                  </Link>
-                  <button 
-                    onClick={handleLogout} 
-                    className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-800" 
-                    aria-label="Logout"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <button 
-                  onClick={() => { handleLoginClick(); setIsMobileMenuOpen(false); }} 
-                  className="block px-3 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 w-full text-left"
-                  aria-label="Login"
-                >
-                  Login
-                </button>
-              )}
-            </div>
-          </div>
-        )}
+    <div className="w-64 bg-blue-900 text-white h-screen flex-shrink-0 flex flex-col">
+      <div className="p-6 border-b border-blue-800">
+        <h1 className="text-2xl font-bold">Wilcox Advisors</h1>
       </div>
-    </nav>
+      <nav className="p-4 flex-grow">
+        <NavItem
+          icon={<Home className="mr-3" />}
+          label="Dashboard"
+          active={activeModule === 'dashboard'}
+          onClick={() => setActiveModule('dashboard')}
+        />
+        <NavItem
+          icon={<Users className="mr-3" />}
+          label="Clients"
+          active={activeModule === 'clients'}
+          onClick={() => setActiveModule('clients')}
+        />
+        <NavItem
+          icon={<Database className="mr-3" />}
+          label="Accounting"
+          active={activeModule === 'accounting'}
+          onClick={() => setActiveModule('accounting')}
+        />
+        <NavItem
+          icon={<FileSpreadsheet className="mr-3" />}
+          label="Reports"
+          active={activeModule === 'reports'}
+          onClick={() => setActiveModule('reports')}
+        />
+        <NavItem
+          icon={<Globe className="mr-3" />}
+          label="Website"
+          active={activeModule === 'website'}
+          onClick={() => setActiveModule('website')}
+        />
+        <NavItem
+          icon={<Settings className="mr-3" />}
+          label="Settings"
+          active={activeModule === 'settings'}
+          onClick={() => setActiveModule('settings')}
+        />
+      </nav>
+      <div className="p-4 border-t border-blue-800">
+        <button
+          onClick={handleLogout}
+          className="flex items-center w-full p-3 rounded hover:bg-blue-800 text-white"
+        >
+          <LogOut className="mr-3" />
+          Logout
+        </button>
+      </div>
+    </div>
   );
 }
 
-export default Header;
+function NavItem({ icon, label, active, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center w-full p-3 rounded hover:bg-blue-800 mb-2 ${
+        active ? 'bg-blue-800' : ''
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}

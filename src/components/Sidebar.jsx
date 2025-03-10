@@ -1,10 +1,17 @@
-// components/Sidebar.jsx
+// src/components/Sidebar.jsx
 import React from 'react';
-import { Home, Users, Database, FileSpreadsheet, Settings, Globe } from 'lucide-react';
+import { Home, Users, Database, FileSpreadsheet, Settings, Globe, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Sidebar({ activeModule, setActiveModule }) {
   const { logout } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
   
   return (
     <div className="w-64 bg-blue-900 text-white h-screen flex-shrink-0 flex flex-col">
@@ -19,6 +26,14 @@ export default function Sidebar({ activeModule, setActiveModule }) {
         <NavItem icon={<Globe className="mr-3" />} label="Website" active={activeModule === 'website'} onClick={() => setActiveModule('website')} />
         <NavItem icon={<Settings className="mr-3" />} label="Settings" active={activeModule === 'settings'} onClick={() => setActiveModule('settings')} />
       </nav>
+      
+      {/* Logout Button */}
+      <div className="p-4 border-t border-blue-800">
+        <button onClick={handleLogout} className="flex items-center w-full p-3 rounded hover:bg-blue-800 text-white">
+          <LogOut className="mr-3" />
+          Logout
+        </button>
+      </div>
     </div>
   );
 }

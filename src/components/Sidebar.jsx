@@ -1,25 +1,20 @@
 // components/Sidebar.jsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Home, Users, Database, FileSpreadsheet, Settings, Globe, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Sidebar({ activeModule, setActiveModule }) {
   const { logout } = useAuth();
-  const navigate = useNavigate();
   
-  const handleLogout = async () => {
-    try {
-      // First, call logout function
-      await logout(); 
-      
-      // Then navigate to home page
-      navigate('/', { replace: true });
-    } catch (error) {
-      console.error("Logout failed:", error);
-      // Fallback if navigate doesn't work
-      window.location.href = '/';
-    }
+  const handleLogout = () => {
+    // Log for debugging
+    console.log("Sidebar logout clicked");
+    
+    // Run logout function
+    logout();
+    
+    // Force a hard page refresh to home
+    window.location.replace('/');
   };
   
   return (

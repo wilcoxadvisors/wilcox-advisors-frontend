@@ -1,91 +1,160 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Home, Users, Database, FileSpreadsheet, Settings, Globe, LogOut } from 'lucide-react';
+// src/components/Header.jsx
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useUI } from '../contexts/UIContext';
 
-export default function Sidebar({ activeModule, setActiveModule }) {
-  const { logout } = useAuth();
+function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isLoggedIn, isAdmin, logout } = useAuth();
+  const { setShowLoginModal, setShowConsultationForm } = useUI();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    console.log("Sidebar: Logout initiated");
     try {
-      await logout(); // Call the logout function from AuthContext
-      console.log("Sidebar: Logout completed, navigating to home");
-      navigate('/', { replace: true }); // Replace history to prevent back navigation
+      await logout();
+      navigate('/');
     } catch (error) {
-      console.error("Sidebar: Logout failed", error);
-      // Fallback to hard redirect if something goes wrong
-      window.location.replace('/');
+      console.error('Logout failed:', error);
     }
   };
 
   return (
-    <div className="w-64 bg-blue-900 text-white h-screen flex-shrink-0 flex flex-col">
-      <div className="p-6 border-b border-blue-800">
-        <h1 className="text-2xl font-bold">Wilcox Advisors</h1>
-      </div>
-      <nav className="p-4 flex-grow">
-        <NavItem
-          icon={<Home className="mr-3" />}
-          label="Dashboard"
-          active={activeModule === 'dashboard'}
-          onClick={() => setActiveModule('dashboard')}
-        />
-        <NavItem
-          icon={<Users className="mr-3" />}
-          label="Clients"
-          active={activeModule === 'clients'}
-          onClick={() => setActiveModule('clients')}
-        />
-        <NavItem
-          icon={<Database className="mr-3" />}
-          label="Accounting"
-          active={activeModule === 'accounting'}
-          onClick={() => setActiveModule('accounting')}
-        />
-        <NavItem
-          icon={<FileSpreadsheet className="mr-3" />}
-          label="Reports"
-          active={activeModule === 'reports'}
-          onClick={() => setActiveModule('reports')}
-        />
-        <NavItem
-          icon={<Globe className="mr-3" />}
-          label="Website"
-          active={activeModule === 'website'}
-          onClick={() => setActiveModule('website')}
-        />
-        <NavItem
-          icon={<Settings className="mr-3" />}
-          label="Settings"
-          active={activeModule === 'settings'}
-          onClick={() => setActiveModule('settings')}
-        />
-      </nav>
-      <div className="p-4 border-t border-blue-800">
-        <button
-          onClick={handleLogout}
-          className="flex items-center w-full p-3 rounded hover:bg-blue-800 text-white"
+    <header className="bg-white shadow">
+      <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+        {/* Logo */}
+        <Link to="/" className="text-blue-800 font-bold text-2xl">
+          Wilcox Advisors
+        </Link>
+
+        {/* Mobile Menu Button */}
+        <button 
+          className="md:hidden text-gray-700"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          <LogOut className="mr-3" />
-          Logout
+          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-8">
+          <Link to="/" className="text-gray-700 hover:text-blue-800">
+            Home
+          </Link>
+          <Link to="/learn-more" className="text-gray-700 hover:text-blue-800">
+            Learn More
+          </Link>
+          {isLoggedIn ? (
+            <>
+              {isAdmin ? (
+                <Link to="/admin-dashboard" className="text-gray-700 hover:text-blue-800">
+                  Admin Dashboard
+                </Link>
+              ) : (
+                <Link to="/client-dashboard" className="text-gray-700 hover:text-blue-800">
+                  Dashboard
+                </Link>
+              )}
+              <button 
+                onClick={handleLogout}
+                className="text-gray-700 hover:text-blue-800"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button 
+                onClick={() => setShowLoginModal(true)}
+                className="text-gray-700 hover:text-blue-800"
+              >
+                Login
+              </button>
+              <button
+                onClick={() => setShowConsultationForm(true)}
+                className="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 transition duration-200"
+              >
+                Free Consultation
+              </button>
+            </>
+          )}
+        </nav>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden absolute top-16 left-0 right-0 bg-white shadow-md z-40">
+            <div className="flex flex-col p-4">
+              <Link 
+                to="/" 
+                className="py-2 text-gray-700 hover:text-blue-800"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link 
+                to="/learn-more" 
+                className="py-2 text-gray-700 hover:text-blue-800"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Learn More
+              </Link>
+              {isLoggedIn ? (
+                <>
+                  {isAdmin ? (
+                    <Link 
+                      to="/admin-dashboard" 
+                      className="py-2 text-gray-700 hover:text-blue-800"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Admin Dashboard
+                    </Link>
+                  ) : (
+                    <Link 
+                      to="/client-dashboard" 
+                      className="py-2 text-gray-700 hover:text-blue-800"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                  )}
+                  <button 
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="py-2 text-left text-gray-700 hover:text-blue-800"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => {
+                      setShowLoginModal(true);
+                      setIsMenuOpen(false);
+                    }}
+                    className="py-2 text-left text-gray-700 hover:text-blue-800"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowConsultationForm(true);
+                      setIsMenuOpen(false);
+                    }}
+                    className="mt-2 bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900 transition duration-200"
+                  >
+                    Free Consultation
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </header>
   );
 }
 
-function NavItem({ icon, label, active, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center w-full p-3 rounded hover:bg-blue-800 mb-2 ${
-        active ? 'bg-blue-800' : ''
-      }`}
-    >
-      {icon}
-      {label}
-    </button>
-  );
-}
+export default Header;

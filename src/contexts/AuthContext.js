@@ -1,4 +1,3 @@
-// src/contexts/AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -18,7 +17,7 @@ export function AuthProvider({ children }) {
   }, [isLoggedIn]);
 
   const login = (token, admin) => {
-    console.log("Login called with:", { token: !!token, admin });
+    console.log("AuthContext: Login called with:", { token: !!token, admin });
     localStorage.setItem('token', token);
     localStorage.setItem('isAdmin', admin);
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -27,23 +26,26 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    console.log("Logout function called in AuthContext");
+    console.log("AuthContext: Logout function called");
+    try {
+      // Optional: Call backend logout endpoint if it exists
+      const API_URL = process.env.REACT_APP_API_URL || 'https://wilcox-advisors-backend.onrender.com';
+      await axios.post(`${API_URL}/api/auth/logout`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      console.log("AuthContext: Backend logout successful");
+    } catch (error) {
+      console.warn("AuthContext: Backend logout failed, proceeding with local cleanup", error);
+    }
+
+    // Clear local state regardless of backend success
     localStorage.removeItem('token');
     localStorage.removeItem('isAdmin');
     delete axios.defaults.headers.common['Authorization'];
     setIsLoggedIn(false);
     setIsAdmin(false);
     setUser(null);
-    
-    // Optional: call logout endpoint if you have one
-    try {
-      const API_URL = process.env.REACT_APP_API_URL || 'https://wilcox-advisors-backend.onrender.com';
-      await axios.post(`${API_URL}/api/auth/logout`);
-    } catch (error) {
-      console.log("Backend logout failed, but local state cleared");
-    }
-    
-    return Promise.resolve(); // Ensure we return a resolved promise
+    console.log("AuthContext: Local state cleared, isLoggedIn:", false);
   };
 
   const value = {
@@ -51,7 +53,7 @@ export function AuthProvider({ children }) {
     isAdmin,
     user,
     login,
-    logout
+    logout,
   };
 
   console.log("AuthContext state:", { isLoggedIn, isAdmin });

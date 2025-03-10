@@ -2,9 +2,11 @@
 import React from 'react';
 import { Home, Users, Database, FileSpreadsheet, Settings, Globe, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Sidebar({ activeModule, setActiveModule }) {
   const { logout } = useAuth();
+  const navigate = useNavigate();
   
   const handleLogout = () => {
     // Log for debugging
@@ -13,8 +15,8 @@ export default function Sidebar({ activeModule, setActiveModule }) {
     // Run logout function
     logout();
     
-    // Force a hard page refresh to home
-    window.location.replace('/');
+    // Use React Router's navigate instead of window.location.replace
+    navigate('/');
   };
   
   return (

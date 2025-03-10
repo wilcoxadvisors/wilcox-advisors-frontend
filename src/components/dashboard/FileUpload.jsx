@@ -1,7 +1,7 @@
 // src/components/dashboard/FileUpload.jsx
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
-import { Upload, Check, AlertCircle, X, FileText, FileSpreadsheet, FilePdf } from 'lucide-react';
+import { Upload, Check, AlertCircle, X, File } from 'lucide-react';
 
 export default function FileUpload({ onSuccess }) {
   const [files, setFiles] = useState([]);
@@ -11,10 +11,9 @@ export default function FileUpload({ onSuccess }) {
   const dropzoneRef = useRef(null);
 
   const getFileIcon = (fileType) => {
-    if (fileType.includes('pdf')) return <FilePdf size={20} />;
-    if (fileType.includes('spreadsheet') || fileType.includes('excel') || fileType.includes('csv')) 
-      return <FileSpreadsheet size={20} />;
-    return <FileText size={20} />;
+    // Using just the standard File icon from lucide-react 
+    // instead of specific file type icons that don't exist
+    return <File size={20} />;
   };
 
   const handleDragOver = (e) => {

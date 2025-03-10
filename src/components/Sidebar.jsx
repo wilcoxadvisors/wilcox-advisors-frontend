@@ -5,10 +5,11 @@ import { Home, Users, FileText, Database, FileSpreadsheet, Settings, Globe, LogO
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Sidebar({ activeModule, setActiveModule }) {
-  const { logout } = useAuth();
   const navigate = useNavigate();
+  const { logout } = useAuth();
   
   const handleLogout = () => {
+    console.log("Logout clicked");
     logout();
     navigate('/');
   };

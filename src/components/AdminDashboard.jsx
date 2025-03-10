@@ -230,39 +230,102 @@ function AdminDashboard() {
       
       case 'accounting':
         return (
-          <section className="py-16 px-6">
-            <h2 className="text-3xl font-bold text-blue-800 mb-10">Accounting System</h2>
-            <div className="bg-white p-6 rounded-lg shadow-md space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="text-xl font-semibold mb-2">Manual Journal Entry</h3>
-                  <p className="text-gray-700 mb-3">Create manual journal entries for the general ledger.</p>
-                  <button className="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900">
-                    Go to Journal Entry
+          <section className="py-10 px-6">
+            <h2 className="text-3xl font-bold text-blue-800 mb-6">Accounting System</h2>
+            
+            {/* Client Selector */}
+            <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Select Client</label>
+              <select className="w-full p-2 border rounded focus:ring-blue-500 focus:border-blue-500">
+                <option value="">-- Select a Client --</option>
+                <option value="client1">Acme Corporation</option>
+                <option value="client2">Globex Industries</option>
+                <option value="client3">Stark Enterprises</option>
+                <option value="client4">Wayne Industries</option>
+              </select>
+            </div>
+            
+            {/* Accounting Features */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-blue-50 p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold mb-2">General Ledger (GL)</h3>
+                <p className="text-gray-700 mb-3">Manage journal entries and multi-currency/entity support.</p>
+                <button className="bg-blue-800 text-white px-4 py-2 rounded hover:bg-blue-900">
+                  Access GL Module
+                </button>
+              </div>
+              
+              <div className="bg-green-50 p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold mb-2">Accounts Payable/Receivable</h3>
+                <p className="text-gray-700 mb-3">Manage invoices, bills, and payments.</p>
+                <button className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">
+                  Access AP/AR Module
+                </button>
+              </div>
+              
+              <div className="bg-purple-50 p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold mb-2">Financial Reporting</h3>
+                <p className="text-gray-700 mb-3">Generate financial statements and dashboards.</p>
+                <button className="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800">
+                  Access Reporting
+                </button>
+              </div>
+              
+              <div className="bg-yellow-50 p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold mb-2">Budgeting/Forecasting</h3>
+                <p className="text-gray-700 mb-3">Create and track budgets and forecasts.</p>
+                <button className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
+                  Access Budgeting
+                </button>
+              </div>
+              
+              <div className="bg-red-50 p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold mb-2">Inventory/Supply Chain</h3>
+                <p className="text-gray-700 mb-3">Manage inventory and supply chain operations.</p>
+                <button className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                  Access Inventory
+                </button>
+              </div>
+              
+              <div className="bg-indigo-50 p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold mb-2">Automation</h3>
+                <p className="text-gray-700 mb-3">Automate journal entries and bank reconciliation.</p>
+                <button className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+                  Access Automation
+                </button>
+              </div>
+              
+              <div className="bg-gray-50 p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold mb-2">Compliance/Audit</h3>
+                <p className="text-gray-700 mb-3">Manage audit trails and compliance documentation.</p>
+                <button className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800">
+                  Access Compliance
+                </button>
+              </div>
+              
+              <div className="bg-teal-50 p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-semibold mb-2">Integration</h3>
+                <p className="text-gray-700 mb-3">Connect with external APIs (Plaid, Stripe, etc.).</p>
+                <button className="bg-teal-700 text-white px-4 py-2 rounded hover:bg-teal-800">
+                  Manage Integrations
+                </button>
+              </div>
+            </div>
+            
+            {/* Multi-Entity/Currency Settings */}
+            <div className="mt-6 bg-white p-4 rounded-lg shadow-md">
+              <h3 className="text-lg font-semibold mb-4">Advanced Settings</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-medium mb-2">Multi-Entity Support</h4>
+                  <button className="bg-blue-100 text-blue-800 px-4 py-2 rounded hover:bg-blue-200">
+                    Manage Entities
                   </button>
                 </div>
-                
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h3 className="text-xl font-semibold mb-2">General Ledger</h3>
-                  <p className="text-gray-700 mb-3">View and manage the general ledger accounts.</p>
-                  <button className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">
-                    Go to General Ledger
-                  </button>
-                </div>
-                
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <h3 className="text-xl font-semibold mb-2">Cash Flow Forecasting</h3>
-                  <p className="text-gray-700 mb-3">Create and manage cash flow forecasts.</p>
-                  <button className="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800">
-                    Go to Cash Flow
-                  </button>
-                </div>
-                
-                <div className="bg-yellow-50 p-4 rounded-lg">
-                  <h3 className="text-xl font-semibold mb-2">Budgeting</h3>
-                  <p className="text-gray-700 mb-3">Create and manage budgets for clients.</p>
-                  <button className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
-                    Go to Budgeting
+                <div>
+                  <h4 className="font-medium mb-2">Multi-Currency Support</h4>
+                  <button className="bg-blue-100 text-blue-800 px-4 py-2 rounded hover:bg-blue-200">
+                    Manage Currencies
                   </button>
                 </div>
               </div>

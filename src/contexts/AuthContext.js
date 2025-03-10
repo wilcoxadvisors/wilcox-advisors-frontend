@@ -26,13 +26,24 @@ export function AuthProvider({ children }) {
     setIsAdmin(admin);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    console.log("Logout function called in AuthContext");
     localStorage.removeItem('token');
     localStorage.removeItem('isAdmin');
     delete axios.defaults.headers.common['Authorization'];
     setIsLoggedIn(false);
     setIsAdmin(false);
     setUser(null);
+    
+    // Optional: call logout endpoint if you have one
+    try {
+      const API_URL = process.env.REACT_APP_API_URL || 'https://wilcox-advisors-backend.onrender.com';
+      await axios.post(`${API_URL}/api/auth/logout`);
+    } catch (error) {
+      console.log("Backend logout failed, but local state cleared");
+    }
+    
+    return Promise.resolve(); // Ensure we return a resolved promise
   };
 
   const value = {
